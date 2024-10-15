@@ -12,3 +12,10 @@ body {
   display: flex;
   min-height: 100vh;
 }
+
+// Customize default colors here
+$theme-colors: (
+  "primary": #00ffff,
+);
+
+@import "node_modules/bootstrap/scss/bootstrap";

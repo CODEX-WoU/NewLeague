@@ -8,7 +8,7 @@ function App() {
       <div>
         <h1>
           Example heading
-          <Badge bg="secondary" as={Button}>
+          <Badge bg="primary" as={Button}>
             Sample Badge to check bootstrap is working
           </Badge>
         </h1>
