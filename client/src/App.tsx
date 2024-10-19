@@ -8,7 +8,7 @@ const App: React.FC = () => {
 
   return (
     <>
-      <h2 className='text-lg text-customColor font-sans font-semibold'>Woxen Sports Academy</h2>
+      <h2 className='text-lg text-gray-500 font-sans font-semibold'>Woxen Sports Academy</h2>
       <h2 className="text-4xl font-bold font-sans text-center mb-6">Our Training Classes</h2>
       <div className="flex flex-col md:flex-row justify-between">
         <EventCard eventName="Yoga" trainedBy="Bella" info="Lorem ipsum dolor sit amet, consectetur adipiscing elit." price={50} image={yogaImage} />
