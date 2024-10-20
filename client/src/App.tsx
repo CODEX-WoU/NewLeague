@@ -1,10 +1,12 @@
 import { Badge, Button } from "react-bootstrap";
 import { RouterProvider } from "react-router-dom";
 import router from "./router";
+import TheHeader from "./components/layout/TheHeader";
 
 function App() {
   return (
     <>
+      <TheHeader></TheHeader>
       <div>
         <h1>
           Example heading
