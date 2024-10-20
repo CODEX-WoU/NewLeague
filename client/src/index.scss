@@ -9,13 +9,17 @@
 
 body {
   margin: 0;
-  display: flex;
   min-height: 100vh;
+  min-width: 100vw;
 }
 
 // Customize default colors here
 $theme-colors: (
-  "primary": #00ffff,
+  "primary": #ef495d,
 );
 
+@font-face {
+  font-family: "Plain";
+  src: url("../public/fonts/Plain-Regular.otf");
+}
 @import "node_modules/bootstrap/scss/bootstrap";
