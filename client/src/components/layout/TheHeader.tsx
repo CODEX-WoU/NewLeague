@@ -1,6 +1,25 @@
+import { useEffect, useState } from "react";
+
 const TheHeader = () => {
+  const [isCompact, setIsCompact] = useState(false);
+
+  // Adjust padding based on screen width
+  useEffect(() => {
+    const handleResize = () => {
+      setIsCompact(window.innerWidth < 1920); // Example threshold, adjust as needed
+    };
+
+    handleResize(); // Set initial state
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
-    <div className="navbar font-plain md:px-12 xl:px-24 2xl:px-72 bg-black text-white">
+    <div
+      className={`navbar font-plain bg-black text-white ${
+        isCompact ? "px-24" : "2xl:px-48"
+      }`}
+    >
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -48,7 +67,11 @@ const TheHeader = () => {
         </a>
       </div>
       <div className="navbar-end hidden lg:flex">
-        <ul className="menu menu-horizontal gap-x-8 [&_a:hover]:text-primary px-1">
+        <ul
+          className={`menu menu-horizontal ${
+            isCompact ? "gap-x-4" : "gap-x-8"
+          } [&_a:hover]:text-primary px-1`}
+        >
           <li>
             <a>HOME</a>
           </li>
