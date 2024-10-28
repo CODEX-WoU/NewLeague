@@ -13,13 +13,7 @@ body {
   min-width: 100vw;
 }
 
-// Customize default colors here
-$theme-colors: (
-  "primary": #ef495d,
-);
-
 @font-face {
   font-family: "Plain";
   src: url("../public/fonts/Plain-Regular.otf");
 }
-@import "node_modules/bootstrap/scss/bootstrap";
