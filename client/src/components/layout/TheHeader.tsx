@@ -1,20 +1,6 @@
-const HeaderNavLink = (props: { title: string; toHref: string }) => {
-  const { title, toHref } = props;
-
-  return (
-    <div className="text-white">
-      <a href={toHref}>
-        <span className="hover:text-primary font-plain text-sm">
-          {title.toUpperCase()}
-        </span>
-      </a>
-    </div>
-  );
-};
-
 const TheHeader = () => {
   return (
-    <div className="navbar font-plain lg:px-72 bg-black text-white">
+    <div className="navbar font-plain md:px-12 xl:px-24 2xl:px-72 bg-black text-white">
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -38,13 +24,22 @@ const TheHeader = () => {
             className="menu menu-sm bg-black dropdown-content rounded-box z-[1] mt-3 w-52 p-2 shadow"
           >
             <li>
-              <a>Item 1</a>
+              <a>HOME</a>
             </li>
             <li>
-              <a>Something</a>
+              <a>ABOUT</a>
             </li>
             <li>
-              <a>Item 3</a>
+              <a>EVENTS</a>
+            </li>
+            <li>
+              <a>FACILITIES</a>
+            </li>
+            <li>
+              <a>BOOKING</a>
+            </li>
+            <li>
+              <a>PRO SHOP</a>
             </li>
           </ul>
         </div>
