@@ -6,17 +6,17 @@ const TheHeader = () => {
   // Adjust padding based on screen width
   useEffect(() => {
     const handleResize = () => {
-      setIsCompact(window.innerWidth < 1920); // Example threshold, adjust as needed
+      setIsCompact(window.innerWidth < 1920);
     };
 
-    handleResize(); // Set initial state
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
     <div
-      className={`navbar font-plain bg-black text-white ${
+      className={`sticky top-0 z-10 navbar font-plain bg-black text-white py-3 ${
         isCompact ? "px-24" : "2xl:px-48"
       }`}
     >
