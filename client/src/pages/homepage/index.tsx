@@ -1,5 +1,8 @@
+import EventSection from './EventSection'
 export const HomePage = () => {
-  return <div>home page placeholder</div>;
+  return <div>
+    <EventSection/>
+  </div>
 };
 
 export default HomePage;
