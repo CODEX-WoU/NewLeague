@@ -1,12 +1,8 @@
-import Events from "./Events";
-
+import EventSection from "./EventSection";
 export const HomePage = () => {
   return (
     <div>
-      home page placeholder
-      <section id="#about">
-        <Events />
-      </section>
+      <EventSection />
     </div>
   );
 };
