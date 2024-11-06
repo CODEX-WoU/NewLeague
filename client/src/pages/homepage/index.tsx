@@ -1,8 +1,19 @@
-import EventSection from './EventSection'
+import TrainingClasses from "./TrainingClasses";
+import Carousel from "./Carousel";
+
 export const HomePage = () => {
-  return <div>
-    <EventSection/>
-  </div>
+  return (
+    <div>
+      <section>
+        <Carousel slideContent={[]}></Carousel>
+      </section>
+      <div className="my-12">
+        <section>
+          <TrainingClasses />
+        </section>
+      </div>
+    </div>
+  );
 };
 
 export default HomePage;
