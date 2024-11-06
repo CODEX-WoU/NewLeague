@@ -5,11 +5,13 @@ export const HomePage = () => {
   return (
     <div>
       <section>
-        <Carousel></Carousel>
+        <Carousel slideContent={[]}></Carousel>
       </section>
-      <section>
-        <TrainingClasses />
-      </section>
+      <div className="my-12">
+        <section>
+          <TrainingClasses />
+        </section>
+      </div>
     </div>
   );
 };
