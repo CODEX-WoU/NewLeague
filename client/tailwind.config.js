@@ -1,7 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 import daisyui from "daisyui";
 
-const colors = { primary: "#ef495d" };
+const colors = {
+  primary: "#ef495d",
+  "base-100": "oklch(100% 0 0)",
+  "base-200": "#F2F2F2",
+  "base-300": "#E5E6E6",
+};
 
 export default {
   content: ["./index.html", "./src/**/*.{tsx,jsx}"],
