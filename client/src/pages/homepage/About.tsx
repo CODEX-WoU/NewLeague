@@ -47,14 +47,13 @@
 
 // export default About;
 
-
-import React from 'react';
+import React from "react";
 
 interface AboutProps {
-  slot1: string;
-  time1: string;
-  slot2: string;
-  time2: string;
+  slot1?: string;
+  time1?: string;
+  slot2?: string;
+  time2?: string;
 }
 
 const About: React.FC<AboutProps> = ({
@@ -68,10 +67,13 @@ const About: React.FC<AboutProps> = ({
       <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row items-center justify-center">
           <div className="flex flex-col justify-center lg:w-5/12 md:w-1/2 w-full lg:text-left mb-8 lg:mb-0">
-            <h2 className="text-4xl font-extrabold text-white mb-3">New to the League?</h2>
+            <h2 className="text-4xl font-extrabold text-white mb-3">
+              New to the League?
+            </h2>
             <h6 className="text-3xl mb-4 text-white">Vision and Mission</h6>
             <p className="text-2xl text-[#666262]">
-              Lorem ipsum dolor sit amet consectetur adipisicing elite, for your commercial website. Bootstrap v4.2.1 Layout. Feel free to use it.
+              Lorem ipsum dolor sit amet consectetur adipisicing elite, for your
+              commercial website. Bootstrap v4.2.1 Layout. Feel free to use it.
             </p>
             <a
               href="#"
@@ -82,7 +84,9 @@ const About: React.FC<AboutProps> = ({
           </div>
           <div className="lg:ml-10">
             <div className="border-l-2 border-[#666262] h-80 pl-8">
-              <h2 className="text-4xl font-extrabold text-white mb-4">Lorem ipsum dolor.</h2>
+              <h2 className="text-4xl font-extrabold text-white mb-4">
+                Lorem ipsum dolor.
+              </h2>
               <h3 className="mt-3 mb-0 text-2xl text-white">{slot1}</h3>
               <p className="mb-4 text-xl text-[#666262] font-bold">{time1}</p>
               <h3 className="mt-3 mb-0 text-2xl text-white">{slot2}</h3>
