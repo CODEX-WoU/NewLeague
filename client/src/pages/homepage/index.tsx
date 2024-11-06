@@ -1,3 +1,4 @@
+import About from './About'
 import TrainingClasses from "./TrainingClasses";
 import Carousel from "./Carousel";
 
@@ -7,6 +8,7 @@ export const HomePage = () => {
       <section>
         <Carousel slideContent={[]}></Carousel>
       </section>
+      <section><About/></section>
       <div className="my-12">
         <section>
           <TrainingClasses />
