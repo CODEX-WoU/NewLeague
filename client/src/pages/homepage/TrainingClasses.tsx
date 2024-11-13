@@ -5,7 +5,7 @@ import cardioImage from "../../assets/EventSectionImages/cardio.jpg";
 
 const App: React.FC = () => {
   return (
-    <>
+    <div className="w-full mx-auto lg:w-3/5">
       <h2 className="text-lg text-gray-500 font-sans font-semibold text-center">
         Woxen Sports Academy
       </h2>
@@ -35,7 +35,7 @@ const App: React.FC = () => {
           image={cardioImage}
         />
       </div>
-    </>
+    </div>
   );
 };
 

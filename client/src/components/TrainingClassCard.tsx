@@ -16,26 +16,36 @@ const EventCard: React.FC<EventCardProps> = ({
   image,
 }) => {
   return (
-    <div className="relative rounded-md shadow-xl p-6 m-3 pt-1 pl-0 pr-0 pb-4 bg-white">
+    <div className="relative shadow-xl mx-4 bg-white grid grid-rows-11">
+      {/* Image: spans the first 7 rows */}
       <img
         src={image}
-        className="w-full h-48 md:h-60 lg:h-72 object-cover rounded-t-lg"
+        className="w-full h-full object-cover row-span-6"
         alt={eventName}
       />
 
-      {/* Flexbox applied to the event name and price */}
-      <div className="flex items-center justify-between mt-4 px-4">
-        <h3 className="text-2xl font-bold font-sans">{eventName}</h3>
-        <span className="bg-red-500 text-white font-bold flex items-center justify-center w-14 h-14 rounded-full">
-          {price} /-
-        </span>
+      {/* Event name, trainedBy, and Price: spans rows 8 to 10 and divided into 2 columns */}
+      <div className="row-span-3 grid grid-cols-2 items-center pr-4 pl-8">
+        <div>
+          <h3 className="text-3xl tracking-tight mb-2 font-extrabold font-plain">
+            {eventName}
+          </h3>
+          <p className="text-[#909090] tracking-tight text-lg font-semibold font-plain">
+            Trained by -{" "}
+            <span className="text-black font-sans font-semibold">
+              {trainedBy}
+            </span>
+          </p>
+        </div>
+        <div className="flex justify-end">
+          <span className="bg-red-500 text-white font-bold flex items-center justify-center w-14 h-14 rounded-full">
+            {price} /-
+          </span>
+        </div>
       </div>
 
-      <p className="text-slate-500 text-lg text-left pl-4 font-bold mb-4">
-        Trained by -{" "}
-        <span className="text-black font-sans font-semibold">{trainedBy}</span>
-      </p>
-      <p className="text-slate-500 content-center text-lg p-3">{info}</p>
+      {/* Info: spans the last 2 rows */}
+      <div className="row-span-3 px-8 pb-4 text-slate-500 text-lg">{info}</div>
     </div>
   );
 };
