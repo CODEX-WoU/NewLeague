@@ -94,11 +94,11 @@ const About: React.FC<AboutProps> = ({
             </a>
           </div>
           <div className="lg:ml-10">
-            <div className="border-l-2 border-[#666262] h-80 pl-8">
+            <div className="lg:border-l-2 lg:h-80 lg:pl-8 lg:border-t-0 lg:w-auto lg-pt-0 lg:text-left border-t-2 w-[75vw] pt-5 text-center border-[#666262]">
               <h2 className="text-4xl font-plain font-bold text-white mb-4">
                 Timings
               </h2>
-              <div className="mt-12">
+              <div className="lg:mt-12">
                 {slot1 && time1 && (
                   <AboutTimingsElement time={time1} slot={slot1} />
                 )}
