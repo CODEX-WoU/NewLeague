@@ -1,4 +1,3 @@
-import { FaFacebook } from "react-icons/fa";
 import {
   FaFacebookF,
   FaInstagram,
