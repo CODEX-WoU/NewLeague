@@ -1,20 +1,58 @@
-import EventCard from '../../components/EventCardTemplate'
-import yogaImage from '../../assets/EventSectionImages/yoga.jpg'
-import aerobicImage from '../../assets/EventSectionImages/aerobic.jpg'
-import cardioImage from '../../assets/EventSectionImages/cardio.jpg'
+import EventsLandingPageCard from "../../components/layout/cards/EventsLandingPageCard";
 
-const App: React.FC = () => {
-
+const App = () => {
   return (
-    <>
-        <h2 className='text-lg text-gray-500 font-sans font-semibold text-center'>Woxen Sports Academy</h2>
-        <h2 className="text-4xl font-bold font-sans text-center mb-6">Our Training Classes</h2>
-        <div className="flex flex-col md:flex-row justify-center align-middle gap-4">
-            <EventCard eventName="Yoga" trainedBy="Bella" info="Lorem ipsum dolor sit amet, consectetur adipiscing elit." price={50} image={yogaImage} />
-            <EventCard eventName="Cardio" trainedBy="Cathe" info="Lorem ipsum dolor sit amet, consectetur adipiscing elit." price={100} image={aerobicImage} />
-            <EventCard eventName="Aerobic" trainedBy="Mary" info="Lorem ipsum dolor sit amet, consectetur adipiscing elit." price={75} image={cardioImage} />
+    <div className="container bg-[#f9f9f9] mx-auto">
+      <div className="flex p-12 flex-wrap justify-center gap-8">
+        {/* Events Section */}
+        <div className="mt-10 mb-6 lg:mb-0 lg:w-5/12 md:w-10/12 w-full">
+          <h2
+            className="text-3xl font-bold mb-4"
+            data-aos="fade-up"
+            data-aos-delay="300"
+          >
+            EVENTS
+          </h2>
+
+          <p
+            className="text-gray-600 mb-4"
+            data-aos="fade-up"
+            data-aos-delay="400"
+          >
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio nemo
+            porro provident, quis accusamus non.
+          </p>
+
+          <p className="text-gray-600" data-aos="fade-up" data-aos-delay="500">
+            Lorem ipsum dolor sit amet consectetur immediately. Thank you.
+          </p>
         </div>
-    </>
+
+        {/* Team Member 1 */}
+        <EventsLandingPageCard
+          imageUrl="https://woxsen.edu.in/uploads/A20240813081416.webp"
+          sport="Volleyball"
+          title="IDK"
+          socialLinks={[
+            { name: "x", url: "#" },
+            { name: "linkedIn", url: "#" },
+          ]}
+        />
+
+        {/* Team Member 2 */}
+        <EventsLandingPageCard
+          imageUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSi2DgLTiEQCY_UcvZDXQId_FSZQl9ofrsG0Q&amp;s"
+          sport="Olympics"
+          title="IDK"
+          socialLinks={[
+            { name: "facebook", url: "" },
+            { name: "insta", url: "" },
+            { name: "x", url: "" },
+            { name: "linkedIn", url: "" },
+          ]}
+        />
+      </div>
+    </div>
   );
 };
 

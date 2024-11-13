@@ -1,4 +1,4 @@
-import TrainingClassCard from "../../components/TrainingClassCard";
+import TrainingClassCard from "../../components/layout/cards/TrainingClassCard";
 import yogaImage from "../../assets/EventSectionImages/yoga.jpg";
 import aerobicImage from "../../assets/EventSectionImages/aerobic.jpg";
 import cardioImage from "../../assets/EventSectionImages/cardio.jpg";
