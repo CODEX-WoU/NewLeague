@@ -94,7 +94,9 @@ const FullHeightSection = (props: SlideContent) => {
       >
         <div>
           {props.heading && (
-            <h1 className="text-5xl font-bold font-plain">{props.heading}</h1>
+            <h1 className="text-5xl text-center font-bold font-plain">
+              {props.heading}
+            </h1>
           )}
         </div>
         {props.bodyText && <div className="my-12">{props.bodyText}</div>}
