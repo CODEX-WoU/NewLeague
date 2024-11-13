@@ -30,16 +30,15 @@ const EventsLandingPageCard = (props: CardProps) => {
     switch (iconName) {
       case "facebook":
         return <FaFacebookF className="hover:text-primary" />;
-        break;
+
       case "insta":
         return <FaInstagram className="hover:text-primary" />;
-        break;
+
       case "linkedIn":
         return <FaLinkedin className="hover:text-primary" />;
-        break;
+
       case "x":
         return <FaXTwitter className="hover:text-primary" />;
-        break;
     }
   }
 
