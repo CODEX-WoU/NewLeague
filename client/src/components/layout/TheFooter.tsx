@@ -5,7 +5,7 @@ const TheFooter: React.FC = () => {
   return (
     <footer
       data-theme="light"
-      className="footer footer-center bg-base-200 text-base-content rounded p-10"
+      className="footer footer-center border-t-4 border-black bg-base-300 text-base-content p-10"
     >
       <nav className="grid grid-flow-col gap-4">
         <a className="link link-hover">About us</a>
@@ -28,8 +28,8 @@ const TheFooter: React.FC = () => {
       </nav>
       <aside>
         <p>
-          Copyright © {new Date().getFullYear()} - All right reserved by Woxsen
-          University
+          Copyright © {new Date().getFullYear()} - All right reserved by{" "}
+          <span className="text-primary font-semibold">Woxsen University</span>
         </p>
       </aside>
     </footer>
