@@ -21,7 +21,7 @@ const AboutContent: React.FC<AboutProps> = ({
           src={backgroundGif}
           alt="Background"
           loading="lazy"
-          className="h-full w-full object-cover scale-110 transform transition-transform duration-1000"
+          className="h-full w-full object-cover scale-110 transform transition-transform duration-1500"
         />
         {/* Enhanced gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br  from-black/95 via-black/85 to-black/40" />
