@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {} from "react-icons/fa";
 import { GiHamburgerMenu } from "react-icons/gi";
+import { Link } from "react-router-dom";
 
 const TheHeader = () => {
   const [isCompact, setIsCompact] = useState(false);
@@ -15,6 +16,7 @@ const TheHeader = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  const navigLinks = { home: "/", about: "/about" };
 
   return (
     <div
@@ -32,10 +34,10 @@ const TheHeader = () => {
             className="menu menu-sm bg-black dropdown-content rounded-box z-[1] mt-3 w-52 p-2 shadow"
           >
             <li>
-              <a>HOME</a>
+              <Link to={navigLinks.home}>HOME</Link>
             </li>
             <li>
-              <a>ABOUT</a>
+              <Link to={navigLinks.about}>ABOUT</Link>
             </li>
             <li>
               <a>EVENTS</a>
@@ -62,10 +64,14 @@ const TheHeader = () => {
           } [&_a:hover]:text-primary px-1`}
         >
           <li>
-            <a>HOME</a>
+            <Link className="focus:text-white" to={navigLinks.home}>
+              HOME
+            </Link>
           </li>
           <li>
-            <a>ABOUT</a>
+            <Link className="focus:text-white" to={navigLinks.about}>
+              ABOUT
+            </Link>
           </li>
           <li>
             <a>EVENTS</a>

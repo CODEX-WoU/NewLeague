@@ -32,7 +32,7 @@ const App = () => {
         <EventsLandingPageCard
           imageUrl="https://woxsen.edu.in/uploads/A20240813081416.webp"
           sport="Volleyball"
-          title="IDK"
+          title="Volleyball League"
           socialLinks={[
             { name: "x", url: "#" },
             { name: "linkedIn", url: "#" },
@@ -43,7 +43,7 @@ const App = () => {
         <EventsLandingPageCard
           imageUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSi2DgLTiEQCY_UcvZDXQId_FSZQl9ofrsG0Q&amp;s"
           sport="Olympics"
-          title="IDK"
+          title="Olympics 2024"
           socialLinks={[
             { name: "facebook", url: "" },
             { name: "insta", url: "" },
