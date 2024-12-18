@@ -15,6 +15,7 @@ export default {
       colors: colors,
       fontFamily: {
         plain: ["Plain", "sans-serif"],
+        poppins: ["Poppins", "sans-serif"],
       },
     },
   },
