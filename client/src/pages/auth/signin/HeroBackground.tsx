@@ -8,6 +8,7 @@ export const HeroBackground = () => {
         style={{
           backgroundImage: `url(${Img})`,
           backgroundRepeat: "no-repeat",
+          filter: "blur(4px)",
         }}
       />
 
