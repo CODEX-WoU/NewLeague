@@ -16,7 +16,7 @@ export const HeroBackground = () => {
       <div className="absolute inset-0 bg-black/60" />
 
       {/* Gradient overlay - bottom right accent */}
-      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary/40" />
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary/80" />
     </>
   );
 };
