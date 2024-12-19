@@ -1,4 +1,4 @@
-import Img from "../../../assets/HomePage/HomePageLeague.webp";
+import Img from "../../assets/HomePage/HomePageLeague.webp";
 
 export const HeroBackground = () => {
   return (

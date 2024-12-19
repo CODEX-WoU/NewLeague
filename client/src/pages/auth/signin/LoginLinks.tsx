@@ -1,4 +1,4 @@
-import { Checkbox } from "../common/Checkbox";
+import { Checkbox } from "../../../components/common/Checkbox";
 
 export const LoginLinks = () => {
   return (

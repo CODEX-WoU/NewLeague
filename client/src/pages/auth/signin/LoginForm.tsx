@@ -1,7 +1,7 @@
 import React from "react";
-import { FormInput } from "../common/FormInput";
+import { FormInput } from "../../../components/common/FormInput";
 import { LoginLinks } from "./LoginLinks";
-import { Button } from "../common/Button";
+import { Button } from "../../../components/common/Button";
 import { LoginHeader } from "./LoginHeader";
 
 const LoginForm = () => {

@@ -1,6 +1,6 @@
-import LoginForm from "../../../components/auth/LoginForm";
+import LoginForm from "./LoginForm";
 import Logo from "../../../components/common/Logo";
-import { Hero } from "./Hero";
+import { Hero } from "../../../components/auth/Hero";
 
 const SignInForm = () => {
   return (
