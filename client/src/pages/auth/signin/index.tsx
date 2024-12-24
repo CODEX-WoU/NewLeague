@@ -9,7 +9,7 @@ const SignInForm = () => {
       <Hero />
 
       {/* Form section - 60% width */}
-      <div className="w-full min-h-screen p-12 relative">
+      <div className="w-full lg:w-[60%] min-h-screen p-12 relative">
         {/* Logo positioned absolutely at top-left */}
         <div className="absolute top-12 left-12">
           <Logo />
