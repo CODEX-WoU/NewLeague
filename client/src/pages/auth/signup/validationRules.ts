@@ -11,7 +11,7 @@ export const validationRules = {
     validate: (value: string) => value.trim().length > 0,
     message: "Name is required",
   },
-  username: {
+  id: {
     validate: (value: string) => value.trim().length > 0,
     message: "Username is required",
   },

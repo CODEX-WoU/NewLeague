@@ -14,7 +14,7 @@ const LoginForm = () => {
     <div className="w-full max-w-md">
       <LoginHeader />
       <form onSubmit={handleSubmit} className="space-y-6">
-        <FormInput type="text" name="username" label="Username" />
+        <FormInput type="email" name="email" label="Email" />
         <FormInput type="password" name="password" label="Password" />
         <Button type="submit">Login</Button>
         <LoginLinks />

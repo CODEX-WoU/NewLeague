@@ -127,12 +127,12 @@ const SignUpForm = ({
           />
           <FormInput
             type="text"
-            name="username"
-            label="Username"
-            value={formData.username}
+            name="id"
+            label="ID (Ex: 23WU0101042)"
+            value={formData.id}
             onChange={handleChange}
             onBlur={handleBlur}
-            error={errors.username}
+            error={errors.id}
           />
         </div>
 
