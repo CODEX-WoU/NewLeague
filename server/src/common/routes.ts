@@ -1,11 +1,9 @@
-import { Router } from 'express'
+import { Router } from "express"
+import facilitiesRouter from "../resources/Facilities/routes"
 
 const router: Router = Router()
 
 // import routes
-import userRouter from '../resources/users/routes'
-
-// Higher level routes definition
-router.use('/user', userRouter)
+router.use("/facility", facilitiesRouter)
 
 export default router
