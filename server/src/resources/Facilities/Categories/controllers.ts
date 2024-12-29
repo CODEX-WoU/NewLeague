@@ -4,7 +4,12 @@ import {
   globalErrorResponseMiddleware,
   internalServerErrorResponseMiddleware,
 } from "../../../middlewares/errorResponseMiddleware"
-import { addFacilityCategoryService, getFacilityCategoriesService, updateFacilityCategoryByIdService } from "./services"
+import {
+  addFacilityCategoryService,
+  deleteFacilityCategoryByIdService,
+  getFacilityCategoriesService,
+  updateFacilityCategoryByIdService,
+} from "./services"
 import EmptyObjectError from "../../../common/custom_errors/emptyObjectErr"
 
 export const getFacilityCategoriesController = async (req: Request, res: Response) => {
@@ -79,6 +84,23 @@ export const updateFacilityCategoryController = async (req: Request<{ id?: strin
     return internalServerErrorResponseMiddleware(res, {
       errObj: err,
       desc: "Error occurred in updateFacilityCategoryById controller",
+    })
+  }
+}
+
+export const deleteFacilityCategoryController = async (req: Request<{ id?: string }>, res: Response) => {
+  const categoryId = req.params.id
+  if (typeof categoryId != "string")
+    return globalErrorResponseMiddleware(req, res, 400, { description: "No 'id' parameter provided in URL" })
+
+  try {
+    const isDeleteOpSuccessful = await deleteFacilityCategoryByIdService(categoryId)
+    if (isDeleteOpSuccessful) return res.status(204).send()
+    else return globalErrorResponseMiddleware(req, res, 404)
+  } catch (err) {
+    return internalServerErrorResponseMiddleware(res, {
+      errObj: err,
+      desc: "Error occurred in deleteFacilityCategory controller",
     })
   }
 }

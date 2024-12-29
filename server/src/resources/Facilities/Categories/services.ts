@@ -31,3 +31,11 @@ export const updateFacilityCategoryByIdService = async (id: string, updateBody: 
 
   return result
 }
+
+export const deleteFacilityCategoryByIdService = async (id: string) => {
+  const result = await db.deleteFrom("facility_categories").where("id", "=", id).executeTakeFirst()
+
+  if (result.numDeletedRows > BigInt(0)) logger.info("Deleted facility_category with id = " + id)
+
+  return !(result.numDeletedRows == BigInt(0))
+}
