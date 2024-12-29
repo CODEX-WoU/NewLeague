@@ -1,7 +1,7 @@
 // TODO: configure authorizaiton middleware for all
 
 import { Router } from "express"
-import { addFacilityController } from "./controllers"
+import { addFacilityController, getFacilitiesController } from "./controllers"
 import categoriesRouter from "./Categories/routes"
 
 const router = Router()
@@ -10,5 +10,6 @@ const router = Router()
 router.use("/category", categoriesRouter)
 
 router.post("/", addFacilityController)
+router.get("/", getFacilitiesController)
 
 export default router

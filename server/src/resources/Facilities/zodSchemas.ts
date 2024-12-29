@@ -1,5 +1,15 @@
 import { z } from "zod"
 
+export const getFacilitiesQuerySchema = z
+  .object({
+    categoriesIdFilter: z
+      .string()
+      .describe("Comma seperated values")
+      .transform((val) => val.split(",")),
+  })
+  .partial()
+  .optional()
+
 export const addFacilityBodySchema = z.object({
   name: z.string(),
   categoryId: z.string().nonempty().optional(),

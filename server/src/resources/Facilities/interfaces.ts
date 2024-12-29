@@ -1,4 +1,5 @@
 import { z } from "zod"
-import { addFacilityBodySchema } from "./zodSchemas"
+import { addFacilityBodySchema, getFacilitiesQuerySchema } from "./zodSchemas"
 
 export type IAddFacilityBody = z.infer<typeof addFacilityBodySchema>
+export type ISelectFilters = z.infer<typeof getFacilitiesQuerySchema>

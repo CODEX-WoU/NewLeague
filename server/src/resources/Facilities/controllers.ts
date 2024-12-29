@@ -1,11 +1,32 @@
 import { Request, Response } from "express"
-import { addFacilityBodySchema } from "./zodSchemas"
+import { addFacilityBodySchema, getFacilitiesQuerySchema } from "./zodSchemas"
 import {
   globalErrorResponseMiddleware,
   internalServerErrorResponseMiddleware,
 } from "../../common/errorResponseMiddleware"
-import { addFacilityService } from "./services"
+import { addFacilityService, getFacilitiesService } from "./services"
 import logger from "../../common/logger"
+
+export const getFacilitiesController = async (req: Request, res: Response) => {
+  const validateBody = getFacilitiesQuerySchema.safeParse(req.query)
+  if (!validateBody.success)
+    return globalErrorResponseMiddleware(req, res, 400, {
+      errors: validateBody.error.errors,
+      description: "Errors in request body schema",
+    })
+
+  try {
+    const selectFilters = validateBody.data
+    const facilities = await getFacilitiesService(selectFilters)
+    return res.status(200).json({
+      success: true,
+      data: facilities,
+    })
+  } catch (error) {
+    logger.error(error, "Error occurred while selecting facilities")
+    return internalServerErrorResponseMiddleware(res)
+  }
+}
 
 export const addFacilityController = async (req: Request, res: Response) => {
   // validating the body
@@ -30,7 +51,7 @@ export const addFacilityController = async (req: Request, res: Response) => {
 
     return res.status(201).json({
       success: true,
-      body: insertResult,
+      data: insertResult,
     })
   } catch (err) {
     logger.error(err, "Error while adding facility")

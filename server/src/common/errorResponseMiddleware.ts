@@ -1,4 +1,5 @@
 import { Request, Response } from "express"
+import logger from "./logger"
 
 export const globalErrorResponseMiddleware = (
   _: Request,
@@ -13,7 +14,14 @@ export const globalErrorResponseMiddleware = (
   })
 }
 
-export const internalServerErrorResponseMiddleware = (res: Response) => {
+export const internalServerErrorResponseMiddleware = (
+  res: Response,
+  errLoggingInfo?: { errObj: Error | unknown; desc?: string },
+) => {
+  if (errLoggingInfo) {
+    logger.error(errLoggingInfo.errObj, errLoggingInfo.desc)
+  }
+
   return res.status(500).json({
     success: false,
     message: "Internal server error",

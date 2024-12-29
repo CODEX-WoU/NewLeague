@@ -10,3 +10,11 @@ export const addFacilityCategoryService = async (insertBody: Insertable<Facility
 
   return result
 }
+
+export const getFacilityCategoriesService = async () => {
+  const result = await db.selectFrom("facility_categories").selectAll().execute()
+
+  logger.debug("Ran select on facility_categories")
+
+  return result
+}
