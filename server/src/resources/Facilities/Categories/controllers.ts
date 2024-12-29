@@ -3,7 +3,7 @@ import { addCategoryZodSchema } from "./zodSchemas"
 import {
   globalErrorResponseMiddleware,
   internalServerErrorResponseMiddleware,
-} from "../../../common/errorResponseMiddleware"
+} from "../../../middlewares/errorResponseMiddleware"
 import { addFacilityCategoryService, getFacilityCategoriesService } from "./services"
 
 export const getFacilityCategoriesController = async (req: Request, res: Response) => {

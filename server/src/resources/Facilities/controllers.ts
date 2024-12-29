@@ -3,7 +3,7 @@ import { addFacilityBodySchema, getFacilitiesQuerySchema } from "./zodSchemas"
 import {
   globalErrorResponseMiddleware,
   internalServerErrorResponseMiddleware,
-} from "../../common/errorResponseMiddleware"
+} from "../../middlewares/errorResponseMiddleware"
 import { addFacilityService, getFacilitiesService } from "./services"
 import logger from "../../common/logger"
 
