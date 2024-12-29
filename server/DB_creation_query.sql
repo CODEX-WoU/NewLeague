@@ -41,16 +41,17 @@ CREATE TABLE facility_categories (
 
 -- Create the 'facilities' table
 CREATE TABLE facilities (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR NOT NULL,
-    category_id UUID REFERENCES facility_categories(id) ON DELETE SET NULL,
-    capacity_per_court INT,
-    number_of_courts INT NOT NULL,
-    cover_image_url VARCHAR,    
-    extra_image_urls VARCHAR[],
-    description TEXT
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	"name" varchar NOT NULL,
+	capacity_per_court int4 NULL,
+	number_of_courts int4 NOT NULL,
+	cover_image_url varchar NULL,
+	extra_image_urls _varchar NULL,
+	description text NULL,
+	category_id uuid NULL,
+	CONSTRAINT facilities_pkey PRIMARY KEY (id),
+	CONSTRAINT facilities_category_fkey FOREIGN KEY (category_id) REFERENCES public.facility_categories(id) ON DELETE CASCADE
 );
-
 
 -- Create the 'slots' table
 CREATE TABLE slots (
@@ -75,6 +76,8 @@ CREATE TABLE booking (
 CREATE TABLE slot_days_availability (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     slot_id UUID NOT NULL REFERENCES slots(id),
-    day day_enum NOT NULL
+    day day_enum NOT null,
+    payment_amount_inr FLOAT not null
 );
+
 
