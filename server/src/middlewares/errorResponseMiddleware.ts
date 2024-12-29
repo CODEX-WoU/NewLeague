@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import logger from "./logger"
+import logger from "../common/logger"
 
 export const globalErrorResponseMiddleware = (
   _: Request,
