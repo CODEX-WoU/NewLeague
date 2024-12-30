@@ -5,9 +5,10 @@ import mongodb from "./services/db"
 
 // to use env variables
 import "./common/env"
+import appConfig from "./config/appConfig"
 
-const PORT = process.env.PORT
+const PORT = appConfig.port
 
 app.listen(PORT, () => {
-  logger.info(`up and running in ${process.env.NODE_ENV || "development"} @: ${os.hostname()} on port ${PORT}`)
+  logger.info(`up and running in ${appConfig.nodeEnv} @: ${os.hostname()} on port ${PORT}`)
 })

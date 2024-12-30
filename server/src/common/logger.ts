@@ -1,8 +1,9 @@
-import pino from 'pino'
+import pino from "pino"
+import appConfig from "../config/appConfig"
 
 const logger = pino({
-  name: process.env.APP_ID || 'app',
-  level: process.env.LOG_LEVEL || 'info',
+  name: appConfig.appName,
+  level: appConfig.loggingLevel,
 })
 
 export default logger
