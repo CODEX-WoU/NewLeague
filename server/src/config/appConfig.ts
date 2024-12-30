@@ -7,4 +7,8 @@ export default {
   appName: process.env.APP_ID || "app",
   loggingLevel: process.env.LOG_LEVEL || "info",
   dbConnectionString: process.env.DATABASE_URL,
+
+  // JWT related
+  jwtPrivateKey: process.env.JWT_PRIVATE_KEY || "Default private key",
+  jwtExpiresInMS: 6.048e8, // 1 week in milliseconds
 }
