@@ -4,7 +4,12 @@ import {
   globalErrorResponseMiddleware,
   internalServerErrorResponseMiddleware,
 } from "../../middlewares/errorResponseMiddleware"
-import { addFacilityService, getFacilitiesService, updateFacilityByIdService } from "./services"
+import {
+  addFacilityService,
+  deleteFacilityByIdsService,
+  getFacilitiesService,
+  updateFacilityByIdService,
+} from "./services"
 import logger from "../../common/logger"
 import { NoResultError } from "kysely"
 import EmptyObjectError from "../../common/custom_errors/emptyObjectErr"
@@ -87,5 +92,23 @@ export const updateFacilityController = async (req: Request<{ id?: string }>, re
     else if (err instanceof EmptyObjectError)
       return globalErrorResponseMiddleware(req, res, 400, { description: "Payload cannot be empty" })
     else return internalServerErrorResponseMiddleware(res, { errObj: err, desc: "Error in updateFacility controller" })
+  }
+}
+
+export const deleteFacilityByIdsController = async (req: Request<{ commaSeperatedIds?: string }>, res: Response) => {
+  const ids = req.params.commaSeperatedIds
+  if (typeof ids != "string")
+    return globalErrorResponseMiddleware(req, res, 400, { description: "No 'commaSeperatedIds' param in url" })
+
+  try {
+    const idList = ids.split(",")
+    const deletedRecords = await deleteFacilityByIdsService(idList)
+
+    return res.status(200).json({ success: true, data: { deletedRecords } })
+  } catch (err) {
+    return internalServerErrorResponseMiddleware(res, {
+      errObj: err,
+      desc: "Error occurred in deleteFacilityByIdsController",
+    })
   }
 }

@@ -50,3 +50,15 @@ export const updateFacilityByIdService = async (id: string, updateBody: Updateab
 
   return updateExecuteResult
 }
+
+export const deleteFacilityByIdsService = async (id: string | string[]) => {
+  var baseQuery = db.deleteFrom("facilities")
+
+  if (typeof id === "string") baseQuery = baseQuery.where("id", "=", id)
+  else baseQuery = baseQuery.where("id", "in", id)
+
+  const result = await baseQuery.executeTakeFirst()
+
+  if (result.numDeletedRows > BigInt(0)) logger.info("Deleted facility_category with ids = " + id)
+  return Number(result.numDeletedRows)
+}
