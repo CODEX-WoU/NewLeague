@@ -1,8 +1,9 @@
 import db from "../../services/db"
 import { Facilities } from "kysely-codegen"
 import logger from "../../common/logger"
-import { Insertable } from "kysely"
+import { Insertable, Updateable } from "kysely"
 import { ISelectFilters } from "./interfaces"
+import EmptyObjectError from "../../common/custom_errors/emptyObjectErr"
 
 export const getFacilitiesService = async (selectFilters?: ISelectFilters) => {
   var baseQuery = db
@@ -37,4 +38,15 @@ export const addFacilityService = async (body: Insertable<Facilities>) => {
   logger.info("Added facility to DB with name: " + result.name)
 
   return result
+}
+
+export const updateFacilityByIdService = async (id: string, updateBody: Updateable<Facilities>) => {
+  if (Object.keys(updateBody).length === 0) throw new EmptyObjectError()
+
+  const updateQuery = db.updateTable("facilities").set(updateBody).where("id", "=", id).returningAll()
+  const updateExecuteResult = await updateQuery.executeTakeFirstOrThrow()
+
+  logger.info("Update facility with id = " + id)
+
+  return updateExecuteResult
 }

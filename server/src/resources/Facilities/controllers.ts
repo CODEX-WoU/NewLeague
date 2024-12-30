@@ -1,11 +1,13 @@
 import { Request, Response } from "express"
-import { addFacilityBodySchema, getFacilitiesQuerySchema } from "./zodSchemas"
+import { addFacilityBodySchema, getFacilitiesQuerySchema, updateFacilityBodySchema } from "./zodSchemas"
 import {
   globalErrorResponseMiddleware,
   internalServerErrorResponseMiddleware,
 } from "../../middlewares/errorResponseMiddleware"
-import { addFacilityService, getFacilitiesService } from "./services"
+import { addFacilityService, getFacilitiesService, updateFacilityByIdService } from "./services"
 import logger from "../../common/logger"
+import { NoResultError } from "kysely"
+import EmptyObjectError from "../../common/custom_errors/emptyObjectErr"
 
 export const getFacilitiesController = async (req: Request, res: Response) => {
   const validateBody = getFacilitiesQuerySchema.safeParse(req.query)
@@ -56,5 +58,34 @@ export const addFacilityController = async (req: Request, res: Response) => {
   } catch (err) {
     logger.error(err, "Error while adding facility")
     return internalServerErrorResponseMiddleware(res)
+  }
+}
+export const updateFacilityController = async (req: Request<{ id?: string }>, res: Response) => {
+  const validateBody = await updateFacilityBodySchema.safeParseAsync(req.body)
+  if (validateBody.success == false)
+    return globalErrorResponseMiddleware(req, res, 400, {
+      errors: validateBody.error.errors,
+      description: "Errors in request body schema",
+    })
+  else if (typeof req.params.id !== "string" || req.params.id == "") {
+    return globalErrorResponseMiddleware(req, res, 400, { description: "No 'id' parameter in URL" })
+  }
+
+  try {
+    const updateBody = validateBody.data
+    const updationResults = await updateFacilityByIdService(req.params.id, updateBody)
+
+    return res.status(200).json({
+      success: true,
+      data: updationResults,
+    })
+  } catch (err) {
+    if (err instanceof NoResultError)
+      return globalErrorResponseMiddleware(req, res, 404, {
+        description: "No record with id = " + req.params.id + " found. Does it actually exist?",
+      })
+    else if (err instanceof EmptyObjectError)
+      return globalErrorResponseMiddleware(req, res, 400, { description: "Payload cannot be empty" })
+    else return internalServerErrorResponseMiddleware(res, { errObj: err, desc: "Error in updateFacility controller" })
   }
 }

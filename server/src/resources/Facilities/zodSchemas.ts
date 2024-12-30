@@ -1,3 +1,4 @@
+import { objectToSnake } from "ts-case-convert"
 import { z } from "zod"
 
 export const getFacilitiesQuerySchema = z
@@ -19,3 +20,5 @@ export const addFacilityBodySchema = z.object({
   coverImageUrl: z.string().url().optional(),
   extraImageUrls: z.array(z.string().url()).optional(),
 })
+
+export const updateFacilityBodySchema = addFacilityBodySchema.partial().transform((obj) => objectToSnake(obj))
