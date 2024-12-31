@@ -1,19 +1,19 @@
 import React from "react";
 // import { Instagram, Twitter, Linkedin, ChevronDown } from 'lucide-react';
 import { BsInstagram, BsTwitterX, BsLinkedin } from "react-icons/bs";
-import { LuCircleChevronDown } from "react-icons/lu";
+import { BiChevronDownCircle } from "react-icons/bi";
 import bgimage from "../../assets/ComingSoonBG.svg";
 
-const CommingSoon: React.FC = () => {
+const ComingSoon: React.FC = () => {
   return (
-
     <div
       className="relative w-full min-h-screen bg-cover bg-no-repeat flex items-center justify-center overflow-hidden"
       style={{
-        backgroundImage: `url(${bgimage}), linear-gradient(135deg, #d92137 , #000000)`,backgroundBlendMode:"overlay"
+        backgroundImage: `url(${bgimage}), linear-gradient(135deg, #d92137 , #000000)`,
+        backgroundBlendMode: "overlay",
       }}
     >
-        <div className="absolute inset-0 bg-black/30 backdrop:blur-3xl"></div>
+      <div className="absolute inset-0 bg-black/30 backdrop:blur-3xl"></div>
       <div className="relative z-10 max-w-3xl mx-auto p-8 text-center">
         <div className="mb-8">
           <h1 className="font-raleway text-white text-4xl lg:text-5xl sm:text-6xl mb-12 font-bold">
@@ -29,7 +29,7 @@ const CommingSoon: React.FC = () => {
           </div>
           <div className="flex justify-center">
             <div className="animate-bounce">
-              <LuCircleChevronDown className="w-6 h-6 text-white" />
+              <BiChevronDownCircle className="w-6 h-6 text-white" />
             </div>
           </div>
         </div>
@@ -59,4 +59,4 @@ const CommingSoon: React.FC = () => {
   );
 };
 
-export default CommingSoon;
+export default ComingSoon;
