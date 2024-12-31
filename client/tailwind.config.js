@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         plain: ["Plain", "sans-serif"],
         poppins: ["Poppins", "sans-serif"],
+        raleway:["raleway","sans-serif"]
       },
     },
   },
