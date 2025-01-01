@@ -98,7 +98,7 @@ export const updateFacilityController = async (req: Request<{ id?: string }>, re
 export const deleteFacilityByIdsController = async (req: Request<{ commaSeperatedIds?: string }>, res: Response) => {
   const ids = req.params.commaSeperatedIds
   if (typeof ids != "string")
-    return globalErrorResponseMiddleware(req, res, 400, { description: "No 'commaSeperatedIds' param in url" })
+    return globalErrorResponseMiddleware(req, res, 400, { description: "No 'commaSeperatedIds' path param in url" })
 
   try {
     const idList = ids.split(",")
