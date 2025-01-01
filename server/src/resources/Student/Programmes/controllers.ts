@@ -1,10 +1,11 @@
 import { Request, Response } from "express"
-import { addProgrammesBodySchema } from "./zodSchemas"
+import { addProgrammesBodySchema, updateProgrammeSchema } from "./zodSchemas"
 import {
   globalErrorResponseMiddleware,
   internalServerErrorResponseMiddleware,
 } from "../../../middlewares/errorResponseMiddleware"
-import { addProgrammesService } from "./services"
+import { addProgrammesService, updateProgrammesByIdsService } from "./services"
+import EmptyObjectError from "../../../common/custom_errors/emptyObjectErr"
 
 export const addProgrammesController = async (req: Request, res: Response) => {
   const validateBody = addProgrammesBodySchema.safeParse(req.body)
@@ -24,5 +25,38 @@ export const addProgrammesController = async (req: Request, res: Response) => {
       errObj: error,
       desc: "Error occurred in addProgrammesController",
     })
+  }
+}
+
+export const updateMultipleProgrammesController = async (
+  req: Request<any, any, any, { commaSeperatedIds?: string }>,
+  res: Response,
+) => {
+  if (typeof req.query.commaSeperatedIds !== "string") {
+    return globalErrorResponseMiddleware(req, res, 400, { description: "No 'commaSeperatedIds' query parameter" })
+  }
+
+  const idList = req.query.commaSeperatedIds.split(",")
+
+  const validateBody = updateProgrammeSchema.safeParse(req.body)
+  if (!validateBody.success) {
+    return globalErrorResponseMiddleware(req, res, 400, {
+      errors: validateBody.error.errors,
+      description: "Errors in request body schema",
+    })
+  }
+  try {
+    const newProgrammeDetails = validateBody.data
+
+    const updatedProgrammes = await updateProgrammesByIdsService(idList, newProgrammeDetails)
+    return res.status(200).json({
+      success: true,
+      data: updatedProgrammes,
+    })
+  } catch (error) {
+    if (error instanceof EmptyObjectError) {
+      return globalErrorResponseMiddleware(req, res, 400, { description: "Payload is empty/has no valid keys" })
+    }
+    return internalServerErrorResponseMiddleware(res, { errObj: error, desc: "Internal Server Error" })
   }
 }

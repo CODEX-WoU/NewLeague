@@ -2,6 +2,7 @@ import { Insertable, Updateable } from "kysely"
 import { Programmes } from "kysely-codegen"
 import db from "../../../services/db"
 import logger from "../../../common/logger"
+import EmptyObjectError from "../../../common/custom_errors/emptyObjectErr"
 
 export async function addProgrammesService(programmes: Insertable<Programmes>[]) {
   const idsOfInsertedProgrammes = await db.transaction().execute(async (trx) => {
@@ -28,7 +29,9 @@ export async function updateProgrammeByIdService(id: string, updatedProgramme: U
   return updateResult
 }
 
-export async function updateProgrammesService(ids: string[], newDetails: Updateable<Programmes>) {
+export async function updateProgrammesByIdsService(ids: string[], newDetails: Updateable<Programmes>) {
+  if (Object.keys(newDetails).length === 0) throw new EmptyObjectError()
+
   const updationResults = await db
     .updateTable("programmes")
     .where("id", "in", ids)

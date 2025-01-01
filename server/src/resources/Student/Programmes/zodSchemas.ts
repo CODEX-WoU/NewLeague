@@ -36,5 +36,3 @@ const utilityAddProgrammeSchema = z
 export const addProgrammesBodySchema = utilityAddProgrammeSchema.or(baseAddProgrammesSchema)
 
 export const updateProgrammeSchema = addProgrammeSchema.partial().strip()
-
-export const updateProgrammesBodySchema = updateProgrammeSchema.array().nonempty()
