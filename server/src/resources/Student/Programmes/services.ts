@@ -43,3 +43,20 @@ export async function updateProgrammesByIdsService(ids: string[], newDetails: Up
 
   return updationResults
 }
+
+export async function getProgrammeService(id: string) {
+  const programmes = await db.selectFrom("programmes").selectAll().where("id", "=", id).executeTakeFirstOrThrow()
+
+  logger.debug("Ran SELECT on programmes")
+  return programmes
+}
+
+export async function getProgrammesService(ids?: string[]) {
+  var selectStmt = db.selectFrom("programmes").selectAll()
+  if (Array.isArray(ids)) selectStmt = selectStmt.where("id", "in", ids)
+
+  const programmes = await selectStmt.execute()
+  logger.debug("Ran SELECT on programmes")
+
+  return programmes
+}

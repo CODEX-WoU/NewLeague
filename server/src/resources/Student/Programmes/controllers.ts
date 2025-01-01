@@ -4,8 +4,59 @@ import {
   globalErrorResponseMiddleware,
   internalServerErrorResponseMiddleware,
 } from "../../../middlewares/errorResponseMiddleware"
-import { addProgrammesService, updateProgrammesByIdsService } from "./services"
+import {
+  addProgrammesService,
+  getProgrammeService,
+  getProgrammesService,
+  updateProgrammesByIdsService,
+} from "./services"
 import EmptyObjectError from "../../../common/custom_errors/emptyObjectErr"
+import { NoResultError } from "kysely"
+
+export const getProgrammeController = async (req: Request<{ id?: string }>, res: Response) => {
+  const id = req.params.id
+  if (typeof id !== "string")
+    return globalErrorResponseMiddleware(req, res, 400, { description: "No 'id' path parameter in URL" })
+
+  try {
+    const programme = await getProgrammeService(id)
+    return res.status(200).json({
+      success: true,
+      data: programme,
+    })
+  } catch (error) {
+    if (error instanceof NoResultError)
+      return globalErrorResponseMiddleware(req, res, 404, { description: `Programme with id = ${id} not found` })
+
+    return internalServerErrorResponseMiddleware(res, {
+      errObj: error,
+      desc: "Error occurred in getProgrammeController",
+    })
+  }
+}
+
+export const getProgrammesController = async (
+  req: Request<any, any, any, { commaSeperatedIds?: string }>,
+  res: Response,
+) => {
+  try {
+    var programmes
+    if (req.query.commaSeperatedIds) {
+      const ids = req.query.commaSeperatedIds.split(",")
+      programmes = await getProgrammesService(ids)
+    } else programmes = await getProgrammesService()
+
+    return res.status(200).json({
+      success: true,
+      data: programmes,
+    })
+  } catch (error) {
+    return internalServerErrorResponseMiddleware(res, {
+      errObj: error,
+      desc: "Error occurred in getProgrammesController",
+    })
+  }
+}
 
 export const addProgrammesController = async (req: Request, res: Response) => {
   const validateBody = addProgrammesBodySchema.safeParse(req.body)

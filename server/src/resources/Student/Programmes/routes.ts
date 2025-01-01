@@ -1,8 +1,15 @@
 import { Router } from "express"
-import { addProgrammesController, updateMultipleProgrammesController } from "./controllers"
+import {
+  addProgrammesController,
+  getProgrammeController,
+  getProgrammesController,
+  updateMultipleProgrammesController,
+} from "./controllers"
 
 const programmesRouter = Router()
 
+programmesRouter.get("/:id", getProgrammeController)
+programmesRouter.get("/", getProgrammesController)
 programmesRouter.post("/multiple", addProgrammesController)
 programmesRouter.patch("/", updateMultipleProgrammesController)
 
