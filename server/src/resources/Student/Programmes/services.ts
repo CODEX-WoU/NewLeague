@@ -2,7 +2,6 @@ import { Insertable, Updateable } from "kysely"
 import { Programmes } from "kysely-codegen"
 import db from "../../../services/db"
 import logger from "../../../common/logger"
-import { IProgrammeUpdateSetBody, IProgrammeUpdateWhereBody } from "./interfaces"
 
 export async function addProgrammesService(programmes: Insertable<Programmes>[]) {
   const idsOfInsertedProgrammes = await db.transaction().execute(async (trx) => {
@@ -29,19 +28,15 @@ export async function updateProgrammeByIdService(id: string, updatedProgramme: U
   return updateResult
 }
 
-export async function updateProgrammesService(set: IProgrammeUpdateSetBody, where: IProgrammeUpdateWhereBody) {
-  if ("id" in where) {
-    return [await updateProgrammeByIdService(where.id, set)]
-  } else {
-    var updateQuery = db.updateTable("programmes")
+export async function updateProgrammesService(ids: string[], newDetails: Updateable<Programmes>) {
+  const updationResults = await db
+    .updateTable("programmes")
+    .where("id", "in", ids)
+    .set(newDetails)
+    .returningAll()
+    .execute()
 
-    if (where.course) updateQuery = updateQuery.where("course", "=", where.course)
-    if (where.specialization) updateQuery = updateQuery.where("specialization", "=", where.specialization)
-    if (where.year) updateQuery = updateQuery.where("year", "=", where.year)
+  logger.info("Updated programmes with ID = " + ids)
 
-    updateQuery = updateQuery.set(set)
-    const executionResults = await updateQuery.returningAll().execute()
-
-    return executionResults
-  }
+  return updationResults
 }

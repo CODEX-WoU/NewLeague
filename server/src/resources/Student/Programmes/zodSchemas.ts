@@ -37,41 +37,4 @@ export const addProgrammesBodySchema = utilityAddProgrammeSchema.or(baseAddProgr
 
 export const updateProgrammeSchema = addProgrammeSchema.partial().strip()
 
-export const updateProgrammesBodySchema = z
-  .object({
-    where: z
-      .object({
-        course: z.string(),
-        specialization: z.string(),
-        year: z.number().positive(),
-      })
-      .partial()
-      .or(z.object({ id: z.string().uuid() })),
-    set: z
-      .object({
-        course: z.string(),
-        specialization: z.string(),
-        year: z.number().positive(),
-      })
-      .partial(),
-  })
-  .refine(
-    (updateDetails) => {
-      const whereKeys = Object.keys(updateDetails.where).filter(
-        (key) =>
-          // @ts-ignore I am literally checking if the key exists or not
-          updateDetails.where[key] !== undefined,
-      )
-      const setKeys = Object.keys(updateDetails.set).filter(
-        (key) =>
-          // @ts-ignore same reason as above
-          updateDetails.set[key] !== undefined,
-      )
-
-      if (whereKeys.length === 0 || setKeys.length === 0) return whereKeys.every((key) => !setKeys.includes(key))
-    },
-    {
-      message:
-        "No property can appear both in 'where' and 'set'. Or either 'set' or 'where' is an empty object or has only undefined values",
-    },
-  )
+export const updateProgrammesBodySchema = updateProgrammeSchema.array().nonempty()
