@@ -6,6 +6,7 @@ import {
 } from "../../../middlewares/errorResponseMiddleware"
 import {
   addProgrammesService,
+  deleteProgrammesService,
   getProgrammeService,
   getProgrammesService,
   updateProgrammesByIdsService,
@@ -109,5 +110,43 @@ export const updateMultipleProgrammesController = async (
       return globalErrorResponseMiddleware(req, res, 400, { description: "Payload is empty/has no valid keys" })
     }
     return internalServerErrorResponseMiddleware(res, { errObj: error, desc: "Internal Server Error" })
+  }
+}
+
+export const deleteProgrammeByIdController = async (req: Request<{ id?: string }>, res: Response) => {
+  const id = req.params.id
+  if (typeof id !== "string") {
+    return globalErrorResponseMiddleware(req, res, 400, { description: "No 'id' path parameter in URL" })
+  }
+
+  try {
+    const deletedRecords = await deleteProgrammesService(id)
+    if (deletedRecords != BigInt(0)) return res.status(204).send()
+    else return globalErrorResponseMiddleware(req, res, 404, { description: `No programme with id = ${id} found` })
+  } catch (error) {
+    return internalServerErrorResponseMiddleware(res, {
+      errObj: error,
+      desc: "Error occurred in deleteProgrammeByIdController",
+    })
+  }
+}
+
+export const deleteMultipleProgrammesByIdController = async (
+  req: Request<any, any, any, { commaSeperatedIds?: string }>,
+  res: Response,
+) => {
+  const commaSeperatedIds = req.query.commaSeperatedIds
+  if (typeof commaSeperatedIds !== "string")
+    return globalErrorResponseMiddleware(req, res, 400, { description: "No 'id' path parameter in URL" })
+
+  try {
+    const ids = commaSeperatedIds.split(",")
+    await deleteProgrammesService(ids)
+    return res.status(204).send()
+  } catch (error) {
+    return internalServerErrorResponseMiddleware(res, {
+      errObj: error,
+      desc: "Error occurred in deleteMultipleProgrammesById controller",
+    })
   }
 }

@@ -60,3 +60,14 @@ export async function getProgrammesService(ids?: string[]) {
 
   return programmes
 }
+
+export async function deleteProgrammesService(ids: string | string[]) {
+  var deleteStmt = db.deleteFrom("programmes")
+  if (Array.isArray(ids)) deleteStmt = deleteStmt.where("id", "in", ids)
+  else deleteStmt = deleteStmt.where("id", "=", ids)
+
+  const deletionResults = await deleteStmt.executeTakeFirst()
+
+  logger.info(`Programmes: Deleted ${deletionResults.numDeletedRows} records with id(s) = ${ids}`)
+  return deletionResults.numDeletedRows
+}
