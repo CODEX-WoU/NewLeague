@@ -7,17 +7,22 @@ import {
   getProgrammesController,
   updateMultipleProgrammesController,
 } from "./controllers"
+import { verifyRoleMiddleware } from "../../../Auth/middleware"
 
 const programmesRouter = Router()
 
 programmesRouter.get("/", getProgrammesController)
 programmesRouter.get("/:id", getProgrammeController)
 
-programmesRouter.post("/multiple", addProgrammesController)
+programmesRouter.post("/multiple", verifyRoleMiddleware({ rolesAllowed: ["ADMIN"] }), addProgrammesController)
 
-programmesRouter.patch("/", updateMultipleProgrammesController)
+programmesRouter.patch("/", verifyRoleMiddleware({ rolesAllowed: ["ADMIN"] }), updateMultipleProgrammesController)
 
-programmesRouter.delete("/multiple", deleteMultipleProgrammesByIdController)
-programmesRouter.delete("/:id", deleteProgrammeByIdController)
+programmesRouter.delete(
+  "/multiple",
+  verifyRoleMiddleware({ rolesAllowed: ["ADMIN"] }),
+  deleteMultipleProgrammesByIdController,
+)
+programmesRouter.delete("/:id", verifyRoleMiddleware({ rolesAllowed: ["ADMIN"] }), deleteProgrammeByIdController)
 
 export default programmesRouter
