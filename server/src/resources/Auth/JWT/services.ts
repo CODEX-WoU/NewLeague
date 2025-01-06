@@ -19,7 +19,7 @@ export const createAccessTokenService = (customParams: IJWTCreationCustomParamet
       "SUPERADMIN" + " which has role = " + customParams.role,
   )
 
-  return { token, expiresAtMs: Date.now() + appConfig.jwtExpiresInMS }
+  return { token, expiresAtMs: Date.now() + appConfig.jwtExpiresInMS, role: customParams.role }
 }
 
 /**

@@ -11,4 +11,8 @@ export default {
   // JWT related
   jwtPrivateKey: process.env.JWT_PRIVATE_KEY || "Default private key",
   jwtExpiresInMS: 6.048e8, // 1 week in milliseconds
+
+  // Superadmin credentials
+  superAdminEmail: process.env.SUPER_ADMIN_EMAIL,
+  superAdminPassword: process.env.SUPER_ADMIN_PASSWORD,
 }
