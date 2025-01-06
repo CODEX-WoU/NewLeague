@@ -7,3 +7,8 @@ export const fetchStudentsRequestBodySchema = z
     year: z.number().or(z.number().array()),
   })
   .partial()
+  .or(
+    z.object({
+      ids: z.string().array(),
+    }),
+  )

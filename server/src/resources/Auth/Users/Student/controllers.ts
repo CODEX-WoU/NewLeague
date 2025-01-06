@@ -4,7 +4,7 @@ import {
   globalErrorResponseMiddleware,
   internalServerErrorResponseMiddleware,
 } from "../../../../middlewares/errorResponseMiddleware"
-import { addStudentService } from "../../../Student/services"
+import { addStudentService } from "../../../Users/Student/services"
 import { hashPasswordService } from "../services"
 import { DatabaseError } from "pg"
 

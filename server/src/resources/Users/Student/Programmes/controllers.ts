@@ -3,7 +3,7 @@ import { addProgrammesBodySchema, updateProgrammeSchema } from "./zodSchemas"
 import {
   globalErrorResponseMiddleware,
   internalServerErrorResponseMiddleware,
-} from "../../../middlewares/errorResponseMiddleware"
+} from "../../../../middlewares/errorResponseMiddleware"
 import {
   addProgrammesService,
   deleteProgrammesService,
@@ -11,7 +11,7 @@ import {
   getProgrammesService,
   updateProgrammesByIdsService,
 } from "./services"
-import EmptyObjectError from "../../../common/custom_errors/emptyObjectErr"
+import EmptyObjectError from "../../../../common/custom_errors/emptyObjectErr"
 import { NoResultError } from "kysely"
 
 export const getProgrammeController = async (req: Request<{ id?: string }>, res: Response) => {

@@ -1,8 +1,8 @@
 import { Insertable, Updateable } from "kysely"
 import { Programmes } from "kysely-codegen"
-import db from "../../../services/db"
-import logger from "../../../common/logger"
-import EmptyObjectError from "../../../common/custom_errors/emptyObjectErr"
+import db from "../../../../services/db"
+import logger from "../../../../common/logger"
+import EmptyObjectError from "../../../../common/custom_errors/emptyObjectErr"
 
 export async function addProgrammesService(programmes: Insertable<Programmes>[]) {
   const idsOfInsertedProgrammes = await db.transaction().execute(async (trx) => {
