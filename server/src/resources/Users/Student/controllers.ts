@@ -9,6 +9,7 @@ import { NoResultError } from "kysely"
 
 export const getMultipleStudentsController = async (req: Request, res: Response) => {
   const validateBody = fetchStudentsRequestBodySchema.safeParse(req.body)
+  console.log(validateBody.success)
   if (!validateBody.success)
     return globalErrorResponseMiddleware(req, res, 400, {
       errors: validateBody.error.errors,
