@@ -3,6 +3,7 @@ import React from "react";
 import { BsInstagram, BsTwitterX, BsLinkedin } from "react-icons/bs";
 import { BiChevronDownCircle } from "react-icons/bi";
 import bgimage from "../../assets/ComingSoonBG.svg";
+import appConfig from "../config/appConfig";
 
 const ComingSoon: React.FC = () => {
   return (
@@ -36,19 +37,19 @@ const ComingSoon: React.FC = () => {
 
         <div className="flex justify-center items-center gap-12">
           <a
-            href="#"
+            href={appConfig.instaSocialMediaLink}
             className="text-white hover:text-[#EF495D] transition-colors duration-300"
           >
             <BsInstagram className="w-8 h-8" />
           </a>
           <a
-            href="#"
+            href={appConfig.linkedInSocialMediaLink}
             className="text-white hover:text-[#EF495D] transition-colors duration-300"
           >
             <BsLinkedin className="w-8 h-8" />
           </a>
           <a
-            href="#"
+            href={appConfig.xSocialMediaLink}
             className="text-white hover:text-[#EF495D] transition-colors duration-300"
           >
             <BsTwitterX className="w-8 h-8" />
