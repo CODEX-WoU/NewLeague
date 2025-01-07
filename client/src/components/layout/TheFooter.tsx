@@ -1,42 +1,88 @@
-import React from "react";
-import { BsLinkedin, BsTwitterX, BsYoutube } from "react-icons/bs";
+import {
+  FaSquareXTwitter,
+  FaYoutube,
+  FaInstagram,
+  FaLinkedin,
+  FaChevronUp,
+} from "react-icons/fa6";
+import appConfig from "../../config/appConfig";
 
-const TheFooter: React.FC = () => {
+export const TheFooter = () => {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const iconSize = 28;
+
   return (
-    <div className="border-t-2 border-gray-300 bg-base-300 text-base-content p-10">
-      <footer
-        data-theme="light"
-        className="footer footer-center p-4 lg:w-2/5 mx-auto rounded-2xl"
-      >
-        <nav className="grid grid-flow-col gap-4">
-          <a className="link link-hover">About us</a>
-          <a className="link link-hover">Bookings</a>
-          <a className="link link-hover">Contact</a>
-          <a className="link link-hover">Press kit</a>
+    <footer className="bg-black font-plain py-4 relative">
+      {/* Container with relative positioning */}
+      <div className="container w-full py-8 lg:w-[60vw] mx-auto px-4 relative">
+        {/* Social Links */}
+        <div className="flex text-white justify-center space-x-10 mb-8">
+          <a
+            href={appConfig.xSocialMediaLink}
+            className="hover:text-primary transition-colors"
+          >
+            <FaSquareXTwitter size={iconSize} />
+          </a>
+          <a
+            href={appConfig.youtubeSocialMediaLink}
+            className="hover:text-primary transition-colors"
+          >
+            <FaYoutube size={iconSize} />
+          </a>
+          <a
+            href={appConfig.instaSocialMediaLink}
+            className="hover:text-primary transition-colors"
+          >
+            <FaInstagram size={iconSize} />
+          </a>
+          <a
+            href={appConfig.linkedInSocialMediaLink}
+            className="hover:text-primary transition-colors"
+          >
+            <FaLinkedin size={iconSize} />
+          </a>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex flex-wrap justify-center gap-x-8 gap-y-2 pb-7 border-b-[1px] text-opacity-80 text-gray-300 border-primary">
+          <a href="#" className="hover:text-primary transition-colors">
+            Home
+          </a>
+          <a href="#" className="hover:text-primary transition-colors">
+            About Us
+          </a>
+          <a href="#" className="hover:text-primary transition-colors">
+            Sports Facilities
+          </a>
+          <a href="#" className="hover:text-primary transition-colors">
+            [Placeholder tag]
+          </a>
+          <a href="#" className="hover:text-primary transition-colors">
+            [Placeholder tag]
+          </a>
+          <a href="#" className="hover:text-primary transition-colors">
+            [Placeholder tag]
+          </a>
         </nav>
-        <nav>
-          <div className="grid grid-flow-col gap-6">
-            <a href="https://in.linkedin.com/school/woxsen-university/">
-              <BsLinkedin size={24} color="#ef495d" />
-            </a>
-            <a href="https://x.com/Woxsen">
-              <BsTwitterX size={24} color="#ef495d" />
-            </a>
-            <a href="https://www.youtube.com/c/WoxsenUniversity">
-              <BsYoutube size={24} color="#ef495d" />
-            </a>
-          </div>
-        </nav>
-        <aside>
-          <p>
-            Copyright © {new Date().getFullYear()} - All right reserved by{" "}
-            <span className="text-primary font-semibold">
-              Woxsen University
-            </span>
-          </p>
-        </aside>
-      </footer>
-    </div>
+
+        {/* Copyright */}
+        <div className="text-center text-sm pt-3 text-primary">
+          © Woxsen University {new Date().getFullYear()}. All rights reserved.
+        </div>
+
+        {/* Scroll to top button */}
+        <button
+          onClick={scrollToTop}
+          className="absolute right-0 top-8 bg-primary hover:bg-primary/90 p-2 rounded-full transition-colors"
+          aria-label="Scroll to top"
+        >
+          <FaChevronUp className="w-5 h-5" />
+        </button>
+      </div>
+    </footer>
   );
 };
 
