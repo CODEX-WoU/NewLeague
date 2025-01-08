@@ -4,6 +4,44 @@ import {
   internalServerErrorResponseMiddleware,
 } from "../../../middlewares/errorResponseMiddleware"
 import { getAdminByIdService } from "./services"
+import { adminSignUpBodySchema } from "./zodSchemas"
+import { randomUUID } from "crypto"
+import { addAdminService } from "./services"
+import { hashPasswordService } from "../../Auth/Users/services"
+import { DatabaseError } from "pg"
+
+export const addAdminController = async (req: Request, res: Response) => {
+  const validateBodyResults = adminSignUpBodySchema.safeParse(req.body)
+  if (!validateBodyResults.success) {
+    return globalErrorResponseMiddleware(req, res, 400, {
+      errors: validateBodyResults.error.errors,
+      description: "Errors in request payload schema",
+    })
+  }
+
+  const adminDetails = validateBodyResults.data
+  try {
+    const uuid = randomUUID()
+    const hashedPassword = await hashPasswordService(adminDetails.password)
+    adminDetails.password = hashedPassword
+
+    const admin = await addAdminService({ ...adminDetails, id: uuid })
+
+    return res.status(201).json({
+      success: true,
+      data: { ...admin, password: undefined },
+    })
+  } catch (error) {
+    if (error instanceof DatabaseError && error.message.includes("duplicate"))
+      return globalErrorResponseMiddleware(req, res, 400, { description: `account with same email exists` })
+
+    return internalServerErrorResponseMiddleware(res, {
+      errObj: error,
+      desc: "Error occurred in adminSignUp controller",
+    })
+  }
+}
+
 export const getAdminController = async (req: Request<{ id?: string }>, res: Response<any, { userId: string }>) => {
   const id = req.params.id
   if (!id)
