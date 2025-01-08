@@ -4,11 +4,14 @@ import db from "../../../services/db"
 import logger from "../../../common/logger"
 
 export const getAdminByIdService = async (ids: string[] | string) => {
-  var selectStmt = db.selectFrom("users").where("role", "=", "ADMIN")
-  if (Array.isArray(ids)) selectStmt = selectStmt.where("id", "=", ids)
-  else selectStmt = selectStmt.where("id", "in", ids)
+  var selectStmt = db
+    .selectFrom("users")
+    .select(["email", "id", "name", "phone_no", "role"])
+    .where("role", "=", "ADMIN")
 
-  const admins = selectStmt.select(["email", "id", "name", "phone_no", "role"]).execute()
+  if (Array.isArray(ids)) selectStmt = selectStmt.where("id", "in", ids)
+  else selectStmt = selectStmt.where("id", "=", ids)
+  const admins = selectStmt.execute()
 
   logger.debug("Ran SELECT on users for ADMIN role")
   return admins
