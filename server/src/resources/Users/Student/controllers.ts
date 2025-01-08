@@ -4,8 +4,9 @@ import {
   globalErrorResponseMiddleware,
   internalServerErrorResponseMiddleware,
 } from "../../../middlewares/errorResponseMiddleware"
-import { fetchStudentsService, getStudentByIdService } from "./services"
+import { deleteStudentByIdService, fetchStudentsService, getStudentByIdService } from "./services"
 import { NoResultError } from "kysely"
+import { UserRole } from "kysely-codegen"
 
 export const getMultipleStudentsController = async (req: Request, res: Response) => {
   const validateBody = fetchStudentsRequestBodySchema.safeParse(req.body)
@@ -45,11 +46,17 @@ export const getMultipleStudentsController = async (req: Request, res: Response)
   })
 }
 
-export const getStudentByIdController = async (req: Request<{ id?: string }>, res: Response) => {
+export const getStudentByIdController = async (
+  req: Request<{ id?: string }>,
+  res: Response<any, { role: UserRole | "SUPERADMIN"; userId: string }>,
+) => {
   const id = req.params.id
-  if (!id) return globalErrorResponseMiddleware(req, res, 400, { description: "No 'id' query parameter in URL" })
+  if (!id) return globalErrorResponseMiddleware(req, res, 400, { description: "No 'id' path parameter in URL" })
 
   try {
+    if (res.locals.role === "STUDENT" && res.locals.userId != id)
+      return globalErrorResponseMiddleware(req, res, 403, { description: "Not allowed" })
+
     const student = await getStudentByIdService(id)
     return res.status(200).json({
       success: true,
@@ -62,6 +69,30 @@ export const getStudentByIdController = async (req: Request<{ id?: string }>, re
       return internalServerErrorResponseMiddleware(res, {
         errObj: error,
         desc: "Error occurred in getStudentById controller",
+      })
+  }
+}
+
+export const deleteStudentByIdController = async (
+  req: Request<{ id?: string }>,
+  res: Response<any, { userId: string; role: UserRole | "SUPERADMIN" }>,
+) => {
+  const id = req.params.id
+  if (!id) return globalErrorResponseMiddleware(req, res, 400, { description: "No `id` path parameter in URL" })
+
+  try {
+    if (res.locals.role === "STUDENT" && id != res.locals.userId)
+      return globalErrorResponseMiddleware(req, res, 403, { description: "Not allowed" })
+
+    await deleteStudentByIdService(id)
+    return res.status(204).send()
+  } catch (error) {
+    if (error instanceof NoResultError)
+      return globalErrorResponseMiddleware(req, res, 400, { description: `No STUDENT with id=${id} exists` })
+    else
+      return internalServerErrorResponseMiddleware(res, {
+        errObj: error,
+        desc: "Error occurred in deleteStudentById controller",
       })
   }
 }

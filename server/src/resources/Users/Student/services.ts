@@ -101,3 +101,20 @@ export const addStudentService = async (
 
   return newStudentId
 }
+
+export const deleteStudentByIdService = async (id: string) => {
+  const deletedStudentId = await db.transaction().execute(async (trx) => {
+    await trx.deleteFrom("students").where("student_id", "=", id).execute()
+    const deletedStudentId = await trx
+      .deleteFrom("users")
+      .where("id", "=", id)
+      .where("role", "=", "STUDENT")
+      .returning("id")
+      .executeTakeFirstOrThrow()
+
+    return deletedStudentId
+  })
+
+  logger.info(`Deleted STUDENT with id=${deletedStudentId}`)
+  return deletedStudentId
+}
