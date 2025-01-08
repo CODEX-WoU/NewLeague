@@ -3,12 +3,13 @@ import {
   globalErrorResponseMiddleware,
   internalServerErrorResponseMiddleware,
 } from "../../../middlewares/errorResponseMiddleware"
-import { getAdminByIdService } from "./services"
+import { deleteAdminService, getAdminByIdService } from "./services"
 import { adminSignUpBodySchema } from "./zodSchemas"
 import { randomUUID } from "crypto"
 import { addAdminService } from "./services"
 import { hashPasswordService } from "../../Auth/Users/services"
 import { DatabaseError } from "pg"
+import { NoResultError } from "kysely"
 
 export const addAdminController = async (req: Request, res: Response) => {
   const validateBodyResults = adminSignUpBodySchema.safeParse(req.body)
@@ -94,5 +95,24 @@ export const getMultipleAdminsControllers = async (
       errObj: error,
       desc: "Error occurred in getMultipleAdminsController",
     })
+  }
+}
+
+export const deleteAdminController = async (req: Request<{ id?: string }>, res: Response) => {
+  const id = req.params.id
+  if (!id)
+    return globalErrorResponseMiddleware(req, res, 400, { description: "No 'id' mandatory path parameter in URL" })
+
+  try {
+    await deleteAdminService(id)
+    return res.status(204).send()
+  } catch (err) {
+    if (err instanceof NoResultError)
+      return globalErrorResponseMiddleware(req, res, 404, { description: `No admin with id=${id} exists` })
+    else
+      return internalServerErrorResponseMiddleware(res, {
+        errObj: err,
+        desc: "Error occurred in deleteAdminController",
+      })
   }
 }
