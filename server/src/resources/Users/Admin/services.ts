@@ -1,7 +1,18 @@
-import { Insertable } from "kysely"
+import { Insertable, Updateable } from "kysely"
 import { UserRole, Users } from "kysely-codegen"
 import db from "../../../services/db"
 import logger from "../../../common/logger"
+
+export const getAdminByIdService = async (ids: string[] | string) => {
+  var selectStmt = db.selectFrom("users").where("role", "=", "ADMIN")
+  if (Array.isArray(ids)) selectStmt = selectStmt.where("id", "=", ids)
+  else selectStmt = selectStmt.where("id", "in", ids)
+
+  const admins = selectStmt.select(["email", "id", "name", "phone_no", "role"]).execute()
+
+  logger.debug("Ran SELECT on users for ADMIN role")
+  return admins
+}
 
 export const addAdminService = async (adminUserInfo: Omit<Insertable<Users>, "role">) => {
   const addable = { ...adminUserInfo, role: "ADMIN" as UserRole }
@@ -24,4 +35,18 @@ export const deleteAdminService = async (adminId: string) => {
   logger.warn(`ADMIN with ID = ${deletedAdmin.id} and email = ${deletedAdmin.email} DELETED from DB`)
 
   return deletedAdmin.id
+}
+
+export const updateAdminByIdService = async (newAdminDetails: Omit<Updateable<Users>, "id" | "role">, id: string) => {
+  const updatedAdmin = await db
+    .updateTable("users")
+    .set(newAdminDetails)
+    .where("id", "=", id)
+    .where("role", "=", "ADMIN")
+    .returning(["email", "id", "name", "phone_no", "role"])
+    .executeTakeFirstOrThrow()
+
+  logger.info(`Updated ADMIN with id ${id}`)
+
+  return updatedAdmin
 }
