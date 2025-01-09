@@ -13,3 +13,13 @@ export const fetchStudentsRequestBodySchema = z
       })
       .partial(),
   )
+
+export const updateStudentRequestBodySchema = z
+  .object({
+    email: z.string().email().endsWith("@woxsen.edu.in"),
+    password: z.string(),
+    name: z.string(),
+    programmeId: z.string(),
+    phoneNo: z.string(),
+  })
+  .partial()

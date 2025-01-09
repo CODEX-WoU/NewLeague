@@ -1,8 +1,9 @@
-import { Insertable } from "kysely"
+import { Insertable, Updateable } from "kysely"
 import logger from "../../../common/logger"
 import db from "../../../services/db"
 import { IFetchStudentsFilters } from "./interfaces"
 import { Students, Users } from "kysely-codegen"
+import EmptyObjectError from "../../../common/custom_errors/emptyObjectErr"
 
 export const fetchStudentsService = async (
   filters: IFetchStudentsFilters,
@@ -100,6 +101,39 @@ export const addStudentService = async (
   })
 
   return newStudentId
+}
+
+export const updateStudentByIdService = async (id: string, newDetails: Updateable<Students> & Updateable<Users>) => {
+  if (Object.keys(newDetails).length == 0) throw new EmptyObjectError()
+
+  await db.transaction().execute(async (trx) => {
+    delete newDetails.id
+    delete newDetails.student_id
+
+    await trx
+      .updateTable("users")
+      .set({
+        name: newDetails.name,
+        password: newDetails.password,
+        phone_no: newDetails.phone_no,
+        email: newDetails.email,
+      })
+      .where("id", "=", id)
+      .executeTakeFirstOrThrow()
+
+    if (newDetails.programme_id) {
+      await trx
+        .updateTable("students")
+        .set({ programme_id: newDetails.programme_id })
+        .where("student_id", "=", id)
+        .returning("programme_id")
+        .executeTakeFirstOrThrow()
+    }
+  })
+
+  logger.debug("Updated STUDENT with id = " + id)
+
+  return await getStudentByIdService(id)
 }
 
 export const deleteStudentByIdService = async (id: string) => {
