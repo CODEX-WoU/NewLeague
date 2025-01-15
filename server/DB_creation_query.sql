@@ -55,13 +55,17 @@ CREATE TABLE facilities (
 
 -- Create the 'slots' table
 CREATE TABLE slots (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    facility_id UUID not NULL REFERENCES facilities(id),
-    courts_available_at_slot INT NOT NULL
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	start_time time NOT NULL,
+	end_time time NOT NULL,
+	facility_id uuid NOT NULL,
+	courts_available_at_slot int4 NOT NULL,
+	"day" public.day_enum NULL,
+	payment_amount_inr float8 NULL,
+	CONSTRAINT slots_pkey PRIMARY KEY (id),
+	CONSTRAINT slots_facility_id_fkey FOREIGN KEY (facility_id) REFERENCES facilities(id),
+    CONSTRAINT unique_slot_combination UNIQUE (start_time, end_time, facility_id, "day")
 );
-
 -- Create the 'booking' table
 CREATE TABLE booking (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -71,13 +75,5 @@ CREATE TABLE booking (
     status booking_status NOT NULL
 );
 
-
--- Create the 'slot_days_availability' table
-CREATE TABLE slot_days_availability (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    slot_id UUID NOT NULL REFERENCES slots(id),
-    day day_enum NOT null,
-    payment_amount_inr FLOAT not null
-);
 
 
