@@ -2,10 +2,12 @@ import { Router } from "express"
 import facilitiesRouter from "../resources/Facilities/routes"
 import authRouter from "../resources/Auth/routes"
 import userRouter from "../resources/Users/routes"
+import slotsRouter from "../resources/Slots/routes"
 
 const router: Router = Router()
 
 // import routes
+router.use("/slot", slotsRouter)
 router.use("/facility", facilitiesRouter)
 router.use("/auth", authRouter)
 router.use("/user", userRouter)
