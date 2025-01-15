@@ -168,18 +168,6 @@ const SignUpForm = ({
             error={errors.gender}
           />
           <FormSelect
-            name="endYear"
-            label="Course End Year"
-            options={yearOptions}
-            value={formData.endYear}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={errors.endYear}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <FormSelect
             name="course"
             label="Course"
             options={courseOptions}
@@ -188,6 +176,9 @@ const SignUpForm = ({
             onBlur={handleBlur}
             error={errors.course}
           />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
           <FormSelect
             name="branch"
             label="Branch"
@@ -198,6 +189,15 @@ const SignUpForm = ({
             error={errors.branch}
             disabled={!formData.course}
             className={!formData.course ? "cursor-not-allowed opacity-50" : ""}
+          />
+          <FormSelect
+            name="endYear"
+            label="Course End Year"
+            options={yearOptions}
+            value={formData.endYear}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={errors.endYear}
           />
         </div>
 
