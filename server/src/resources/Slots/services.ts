@@ -4,6 +4,7 @@ import db from "../../services/db"
 import { ConflictingSlotErr } from "../../common/custom_errors/slotErr"
 import logger from "../../common/logger"
 import EmptyObjectError from "../../common/custom_errors/emptyObjectErr"
+import { IPagingMarkers, ISlotsFilters, ISlotsSortParams } from "./interfaces"
 
 export const addSlotService = async (slotInfo: Insertable<Slots>) => {
   if (await checkConflicts([slotInfo])) {
@@ -59,6 +60,63 @@ export const selectSlotByIdService = async (id: string) => {
   logger.debug("Ran SELECT on slots for id = " + id)
 
   return slot
+}
+
+export const selectSlotsUsingFiltersService = async (
+  filters?: ISlotsFilters,
+  sortingParams?: ISlotsSortParams,
+  paging?: IPagingMarkers,
+) => {
+  console.log(filters)
+
+  var selectStmt = db
+    .selectFrom("slots")
+    .leftJoin("facilities", "slots.facility_id", "facilities.id")
+    .select([
+      "slots.id",
+      "slots.courts_available_at_slot",
+      "slots.start_time",
+      "slots.end_time",
+      "slots.day",
+      "slots.facility_id",
+      "slots.payment_amount_inr",
+      "facilities.name as facility_name",
+      "facilities.capacity_per_court",
+    ])
+
+  // Adding filters
+  if (filters) {
+    if ("ids" in filters) selectStmt = selectStmt.where("slots.id", "in", filters.ids)
+    else {
+      if (filters.days) selectStmt = selectStmt.where("slots.day", "in", filters.days)
+      if (filters.facilities) selectStmt = selectStmt.where("slots.facility_id", "in", filters.facilities)
+      if (filters.startsByRange) {
+        if (filters.startsByRange.gte)
+          selectStmt = selectStmt.where("slots.start_time", ">=", filters.startsByRange.gte)
+        if (filters.startsByRange.lte)
+          selectStmt = selectStmt.where("slots.start_time", "<=", filters.startsByRange.lte)
+      }
+      if (filters.endsByRange) {
+        if (filters.endsByRange.gte) selectStmt = selectStmt.where("slots.end_time", ">=", filters.endsByRange.gte)
+        if (filters.endsByRange.lte) selectStmt = selectStmt.where("slots.end_time", "<=", filters.endsByRange.lte)
+      }
+    }
+  }
+
+  // Sorting the results
+  if (sortingParams) {
+    selectStmt = selectStmt.orderBy(`${sortingParams.sortBy} ${sortingParams.order}`)
+  }
+
+  // Implementing paging
+  if (paging) {
+    selectStmt = selectStmt.offset(paging.index).limit(paging.limit)
+  }
+
+  const slots = await selectStmt.execute()
+  logger.debug("Ran complex SELECT on slots table")
+
+  return slots
 }
 
 export const updateSlotByIdService = async (id: string, slotUpdate: Updateable<Slots>) => {

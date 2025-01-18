@@ -1,14 +1,20 @@
 import { Request, Response } from "express"
-import { addSlotRequestBodySchema, updateSlotRequestBodySchema } from "./zodSchemas"
+import { addSlotRequestBodySchema, getSlotsSchema, updateSlotRequestBodySchema } from "./zodSchemas"
 import {
   globalErrorResponseMiddleware,
   internalServerErrorResponseMiddleware,
 } from "../../middlewares/errorResponseMiddleware"
-import { addMultipleSlotsService, addSlotService, updateSlotByIdService } from "./services"
+import {
+  addMultipleSlotsService,
+  addSlotService,
+  selectSlotsUsingFiltersService,
+  updateSlotByIdService,
+} from "./services"
 import { ConflictingSlotErr } from "../../common/custom_errors/slotErr"
 import { NoResultError } from "kysely"
 import EmptyObjectError from "../../common/custom_errors/emptyObjectErr"
 import { z } from "zod"
+import { isStringPositiveInteger } from "../../util/parsing"
 
 export const addSlotController = async (req: Request, res: Response) => {
   const validationResults = addSlotRequestBodySchema.safeParse(req.body)
@@ -56,6 +62,43 @@ export const addMultipleSlotsController = async (req: Request, res: Response) =>
         description: "One or more slot conflicts timing with a slot with same facilityId and day",
       })
     else return internalServerErrorResponseMiddleware(res, { errObj: error, desc: "Error in addSlotController" })
+  }
+}
+
+export const getSlotsController = async (req: Request, res: Response) => {
+  try {
+    let { index, limit } = req.query as { index: string | number | undefined; limit: string | number | undefined }
+    if (index && !isStringPositiveInteger(index))
+      return globalErrorResponseMiddleware(req, res, 400, {
+        description: "Query parameter 'index' is not a valid integer",
+      })
+
+    if (limit && !isStringPositiveInteger(limit)) {
+      return globalErrorResponseMiddleware(req, res, 400, {
+        description: "Query parameter 'index' is not a valid integer",
+      })
+    }
+
+    index = index ? parseInt(index as string) : limit ? 0 : undefined
+    limit = limit ? parseInt(limit as string) : index ? 30 : undefined
+    const paging = index !== undefined && limit !== undefined ? { index, limit } : undefined
+
+    const bodyValidation = getSlotsSchema.safeParse(req.body)
+    if (!bodyValidation.success)
+      return globalErrorResponseMiddleware(req, res, 400, {
+        errors: bodyValidation.error.errors,
+        description: "Erros in request payload schema",
+      })
+
+    const filtersAndSorters = bodyValidation.data
+    const slots = await selectSlotsUsingFiltersService(filtersAndSorters.filters, filtersAndSorters.sort, paging)
+
+    return res.status(200).json({
+      success: true,
+      data: slots,
+    })
+  } catch (error) {
+    return internalServerErrorResponseMiddleware(res, { errObj: error, desc: "Error in getSlots controller" })
   }
 }
 

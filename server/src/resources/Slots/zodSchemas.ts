@@ -1,6 +1,12 @@
 import { objectToSnake } from "ts-case-convert"
 import { z } from "zod"
-import { isTimeStringLessThan } from "../../util/timeRelated"
+import { checkTimeInCorrectFormat, isTimeStringLessThan } from "../../util/timeRelated"
+import { DayEnum } from "kysely-codegen"
+
+const dayEnumVals = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Sunday", "Saturday"] as [
+  DayEnum,
+  ...DayEnum[],
+]
 
 export const addSlotRequestBodySchema = z
   .object({
@@ -8,7 +14,7 @@ export const addSlotRequestBodySchema = z
     endTime: z.string().time(),
     facilityId: z.string(),
     courtsAvailableAtSlot: z.number(),
-    day: z.enum(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Sunday", "Saturday"]),
+    day: z.enum(dayEnumVals),
     paymentAmountInr: z.number().nonnegative().nullable().optional(),
   })
   .refine((slot) => isTimeStringLessThan(slot.startTime, slot.endTime), {
@@ -19,7 +25,7 @@ export const addSlotRequestBodySchema = z
 export const updateSlotRequestBodySchema = z
   .object({
     courtsAvailableAtSlot: z.number().optional(),
-    day: z.enum(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Sunday", "Saturday"]).optional(),
+    day: z.enum(dayEnumVals).optional(),
     paymentAmountInr: z.number().nonnegative().nullable().optional(),
     facilityId: z.string().optional(),
     startTime: z.string().time().optional(),
@@ -35,3 +41,50 @@ export const updateSlotRequestBodySchema = z
     },
   )
   .transform((obj) => objectToSnake(obj))
+
+export const getSlotsFiltersSchema = z
+  .object({
+    ids: z.string().uuid().array().nonempty(),
+  })
+  .or(
+    z.object({
+      facilities: z.string().uuid().array().nonempty().optional(),
+      days: z.enum(dayEnumVals).array().optional(),
+      startsByRange: z
+        .object({
+          gte: z.string().refine((time) => checkTimeInCorrectFormat(time), {
+            message: "startsByRange.gte not in correct time format",
+          }),
+          lte: z.string().refine((time) => checkTimeInCorrectFormat(time), {
+            message: "startsByRange.lte not in correct time format",
+          }),
+        })
+        .partial()
+        .optional(),
+      endsByRange: z
+        .object({
+          gte: z.string().refine((time) => checkTimeInCorrectFormat(time), {
+            message: "endsByRange.gte not in correct time format",
+          }),
+          lte: z.string().refine((time) => checkTimeInCorrectFormat(time), {
+            message: "endsByRange.lte not in correct time format",
+          }),
+        })
+        .partial()
+        .optional(),
+    }),
+  )
+export const getSlotsSortingParamsSchema = z.object({
+  sortBy: z.enum(["facility", "day", "startsAt", "endsAt"]).transform((param) => {
+    if (param === "endsAt") return "end_time"
+    else if (param === "startsAt") return "start_time"
+    else if (param === "facility") return "facility_id"
+    else return param
+  }),
+  order: z.enum(["asc", "desc"]).default("asc"),
+})
+
+export const getSlotsSchema = z.object({
+  filters: getSlotsFiltersSchema.optional(),
+  sort: getSlotsSortingParamsSchema.optional(),
+})
