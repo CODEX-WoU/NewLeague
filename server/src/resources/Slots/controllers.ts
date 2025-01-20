@@ -35,7 +35,8 @@ export const addSlotController = async (req: Request, res: Response) => {
   } catch (error) {
     if (error instanceof ConflictingSlotErr)
       return globalErrorResponseMiddleware(req, res, 409, {
-        description: "Slot conflicts timing with a slot with same facilityId and day",
+        description:
+          "Slot conflicts timing with a slot with same facilityId and day OR facility has less courts than court capacity in slot",
       })
     else return internalServerErrorResponseMiddleware(res, { errObj: error, desc: "Error in addSlotController" })
   }
@@ -59,7 +60,8 @@ export const addMultipleSlotsController = async (req: Request, res: Response) =>
   } catch (error) {
     if (error instanceof ConflictingSlotErr)
       return globalErrorResponseMiddleware(req, res, 409, {
-        description: "One or more slot conflicts timing with a slot with same facilityId and day",
+        description:
+          "One or more slot conflicts timing with a slot with same facilityId and day OR facility does not allow given number of courts for slot",
       })
     else return internalServerErrorResponseMiddleware(res, { errObj: error, desc: "Error in addSlotController" })
   }
@@ -125,7 +127,8 @@ export const updateSlotController = async (req: Request<{ id?: string }>, res: R
   } catch (err) {
     if (err instanceof ConflictingSlotErr)
       return globalErrorResponseMiddleware(req, res, 409, {
-        description: "One or more slot conflicts timing with a slot with same facilityId and day",
+        description:
+          "One or more slot conflicts timing with a slot with same facilityId and day OR number of courts entered is more than allowed by facility",
       })
     else if (err instanceof NoResultError)
       return globalErrorResponseMiddleware(req, res, 400, { description: `No slot with id=${id} found` })

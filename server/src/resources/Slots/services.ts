@@ -164,12 +164,21 @@ export const updateSlotByIdService = async (id: string, slotUpdate: Updateable<S
 async function checkConflicts(newSlots: Insertable<Slots>[]): Promise<false | [boolean, Insertable<Slots>]> {
   // Step 1: Get all unique facility_id and day combinations from the new slots
   const uniqueCombinations = new Map<string, Insertable<Slots>[]>()
+
+  const facilityIds: string[] = []
+  const slotsByFacility = new Map<string, Insertable<Slots>[]>()
+
   newSlots.forEach((slot) => {
     const key = `${slot.facility_id}_${slot.day}`
     if (!uniqueCombinations.has(key)) {
       uniqueCombinations.set(key, [])
     }
     uniqueCombinations.get(key)!.push(slot)
+    facilityIds.push(slot.facility_id)
+    slotsByFacility.set(
+      slot.facility_id,
+      slotsByFacility.has(slot.facility_id) ? [...slotsByFacility.get(slot.facility_id)!, slot] : [slot],
+    )
   })
 
   // Step 2: For each unique combination, check for conflicts
@@ -195,6 +204,21 @@ async function checkConflicts(newSlots: Insertable<Slots>[]): Promise<false | [b
           return [true, newSlot]
         }
       }
+    }
+  }
+
+  // Step 3: Check if slot courts exceed courts mentioned in corresponding facility record
+
+  const facilities = await db
+    .selectFrom("facilities")
+    .select(["id", "number_of_courts"])
+    .where("id", "in", Array.from(slotsByFacility.keys()))
+    .execute()
+
+  for (const [facilityId, slots] of slotsByFacility) {
+    const facility = facilities.filter((f) => f.id === facilityId)[0]
+    for (const slot of slots) {
+      if (slot.courts_available_at_slot > facility.number_of_courts) return [true, slot]
     }
   }
 

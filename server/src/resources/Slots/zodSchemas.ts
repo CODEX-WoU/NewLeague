@@ -13,7 +13,7 @@ export const addSlotRequestBodySchema = z
     startTime: z.string().time(),
     endTime: z.string().time(),
     facilityId: z.string(),
-    courtsAvailableAtSlot: z.number(),
+    courtsAvailableAtSlot: z.number().positive(),
     day: z.enum(dayEnumVals),
     paymentAmountInr: z.number().nonnegative().nullable().optional(),
   })
@@ -24,7 +24,7 @@ export const addSlotRequestBodySchema = z
 
 export const updateSlotRequestBodySchema = z
   .object({
-    courtsAvailableAtSlot: z.number().optional(),
+    courtsAvailableAtSlot: z.number().positive().optional(),
     day: z.enum(dayEnumVals).optional(),
     paymentAmountInr: z.number().nonnegative().nullable().optional(),
     facilityId: z.string().optional(),
