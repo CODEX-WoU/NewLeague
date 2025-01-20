@@ -161,6 +161,15 @@ export const updateSlotByIdService = async (id: string, slotUpdate: Updateable<S
 
 // HELPER FUNCTIONS START HERE
 
+/**
+ * Checks if any of the `newSlots` that are to be added/updated, conflicts their timings with an existing slot for same day or facility.
+ * Also checks if the amount of courts mentioned in the slot is less than or equal to courts available in the facility
+ *
+ * Does not actually insert into database
+ *
+ * @param newSlots the slots to be inserted/updated
+ * @returns `false` if no conflict. Else, `[true, SLOT]` where `SLOT` is the slot which conflicts with something existing
+ */
 async function checkConflicts(newSlots: Insertable<Slots>[]): Promise<false | [boolean, Insertable<Slots>]> {
   // Step 1: Get all unique facility_id and day combinations from the new slots
   const uniqueCombinations = new Map<string, Insertable<Slots>[]>()
