@@ -7,6 +7,7 @@ import {
 import {
   addMultipleSlotsService,
   addSlotService,
+  deleteSlotByIdService,
   selectSlotsUsingFiltersService,
   updateSlotByIdService,
 } from "./services"
@@ -135,5 +136,24 @@ export const updateSlotController = async (req: Request<{ id?: string }>, res: R
     else if (err instanceof EmptyObjectError)
       return globalErrorResponseMiddleware(req, res, 400, { description: "Update object has no valid keys (is empty)" })
     else return internalServerErrorResponseMiddleware(res, { errObj: err, desc: "Error in updateSlot controller" })
+  }
+}
+
+export const deleteSlotController = async (req: Request<{ id?: string }>, res: Response) => {
+  const id = req.params.id
+  try {
+    if (typeof id !== "string" || !z.string().uuid().safeParse(id).success) {
+      return globalErrorResponseMiddleware(req, res, 400, {
+        description: "mandatory path parameter `id` should be a UUID",
+      })
+    }
+
+    await deleteSlotByIdService(id)
+    return res.status(204).send()
+  } catch (error) {
+    if (error instanceof NoResultError)
+      return globalErrorResponseMiddleware(req, res, 404, { description: `No slot with id=${id} found` })
+
+    return internalServerErrorResponseMiddleware(res, { errObj: error, desc: "Error occurred in deleteSlotController" })
   }
 }

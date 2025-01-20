@@ -159,6 +159,22 @@ export const updateSlotByIdService = async (id: string, slotUpdate: Updateable<S
   return updatedSlot
 }
 
+/**
+ * Deletes a slot given it's ID
+ * @param id id of the slot to be deleted
+ * @returns {Promise<string>} the id of the deleted slot if operation was successful
+ */
+export const deleteSlotByIdService = async (id: string): Promise<string> => {
+  const deletedSlotId = await db
+    .deleteFrom("slots")
+    .where("slots.id", "=", id)
+    .returning("slots.id")
+    .executeTakeFirstOrThrow()
+
+  logger.info(`Deleted slot with ID = ${id}`)
+  return deletedSlotId.id
+}
+
 // HELPER FUNCTIONS START HERE
 
 /**
