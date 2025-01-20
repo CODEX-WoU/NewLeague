@@ -1,10 +1,10 @@
-import { Insertable, Updateable } from "kysely"
+import { Insertable, sql, Updateable } from "kysely"
 import { DayEnum, Slots } from "kysely-codegen"
 import db from "../../services/db"
 import { ConflictingSlotErr } from "../../common/custom_errors/slotErr"
 import logger from "../../common/logger"
 import EmptyObjectError from "../../common/custom_errors/emptyObjectErr"
-import { IPagingMarkers, ISlotsFilters, ISlotsSortParams } from "./interfaces"
+import { IAvailabilityParams, IPagingMarkers, ISlotsFilters, ISlotsSortParams } from "./interfaces"
 
 export const addSlotService = async (slotInfo: Insertable<Slots>) => {
   if (await checkConflicts([slotInfo])) {
@@ -66,39 +66,24 @@ export const selectSlotsUsingFiltersService = async (
   filters?: ISlotsFilters,
   sortingParams?: ISlotsSortParams,
   paging?: IPagingMarkers,
+  availabilityParams?: IAvailabilityParams,
 ) => {
-  console.log(filters)
-
-  var selectStmt = db
-    .selectFrom("slots")
-    .leftJoin("facilities", "slots.facility_id", "facilities.id")
-    .select([
-      "slots.id",
-      "slots.courts_available_at_slot",
-      "slots.start_time",
-      "slots.end_time",
-      "slots.day",
-      "slots.facility_id",
-      "slots.payment_amount_inr",
-      "facilities.name as facility_name",
-      "facilities.capacity_per_court",
-    ])
+  var selectStmt = generateBaseSelectStmt(availabilityParams?.date ? new Date(availabilityParams.date) : undefined)
+  console.log(selectStmt.compile())
 
   // Adding filters
   if (filters) {
-    if ("ids" in filters) selectStmt = selectStmt.where("slots.id", "in", filters.ids)
+    if ("ids" in filters) selectStmt = selectStmt.where("id", "in", filters.ids)
     else {
-      if (filters.days) selectStmt = selectStmt.where("slots.day", "in", filters.days)
-      if (filters.facilities) selectStmt = selectStmt.where("slots.facility_id", "in", filters.facilities)
+      if (filters.days) selectStmt = selectStmt.where("day", "in", filters.days)
+      if (filters.facilities) selectStmt = selectStmt.where("facility_id", "in", filters.facilities)
       if (filters.startsByRange) {
-        if (filters.startsByRange.gte)
-          selectStmt = selectStmt.where("slots.start_time", ">=", filters.startsByRange.gte)
-        if (filters.startsByRange.lte)
-          selectStmt = selectStmt.where("slots.start_time", "<=", filters.startsByRange.lte)
+        if (filters.startsByRange.gte) selectStmt = selectStmt.where("start_time", ">=", filters.startsByRange.gte)
+        if (filters.startsByRange.lte) selectStmt = selectStmt.where("start_time", "<=", filters.startsByRange.lte)
       }
       if (filters.endsByRange) {
-        if (filters.endsByRange.gte) selectStmt = selectStmt.where("slots.end_time", ">=", filters.endsByRange.gte)
-        if (filters.endsByRange.lte) selectStmt = selectStmt.where("slots.end_time", "<=", filters.endsByRange.lte)
+        if (filters.endsByRange.gte) selectStmt = selectStmt.where("end_time", ">=", filters.endsByRange.gte)
+        if (filters.endsByRange.lte) selectStmt = selectStmt.where("end_time", "<=", filters.endsByRange.lte)
       }
     }
   }
@@ -249,4 +234,87 @@ async function checkConflicts(newSlots: Insertable<Slots>[]): Promise<false | [b
 
   // No conflicts found
   return false
+}
+
+function generateBaseSelectStmt(date?: Date) {
+  if (date)
+    return db
+      .with("slot_facility_join", (db) =>
+        db
+          .selectFrom("slots")
+          .leftJoin("facilities", "slots.facility_id", "facilities.id")
+          .select((eb) => {
+            return [
+              "slots.id",
+              "slots.courts_available_at_slot",
+              "slots.start_time",
+              "slots.end_time",
+              "slots.day",
+              "slots.facility_id",
+              "slots.payment_amount_inr",
+              "facilities.name as facility_name",
+              "facilities.capacity_per_court",
+              "facilities.number_of_courts",
+              db
+                .selectFrom(["booking"])
+                .whereRef("booking.slot_id", "=", eb.ref("slots.id"))
+                .where("booking.booking_date", "=", date)
+                .select((eb) => eb.fn.count<number>("booking.id").as("count"))
+                .as("booking_count"),
+            ]
+          }),
+      )
+      .selectFrom("slot_facility_join")
+      .select([
+        "id",
+        "capacity_per_court",
+        "courts_available_at_slot",
+        "day",
+        "facility_id",
+        "facility_name",
+        "start_time",
+        "end_time",
+        "payment_amount_inr",
+        (eb) =>
+          eb
+            .case()
+            .when("booking_count", ">=", eb.ref("number_of_courts"))
+            .then(false)
+            .else(true)
+            .end()
+            .as("is_available"),
+      ])
+  else
+    return db
+      .with("slot_facility_join", (db) =>
+        db
+          .selectFrom("slots")
+          .leftJoin("facilities", "slots.facility_id", "facilities.id")
+          .select((eb) => {
+            return [
+              "slots.id",
+              "slots.courts_available_at_slot",
+              "slots.start_time",
+              "slots.end_time",
+              "slots.day",
+              "slots.facility_id",
+              "slots.payment_amount_inr",
+              "facilities.name as facility_name",
+              "facilities.capacity_per_court",
+              "facilities.number_of_courts",
+            ]
+          }),
+      )
+      .selectFrom("slot_facility_join")
+      .select([
+        "id",
+        "capacity_per_court",
+        "courts_available_at_slot",
+        "day",
+        "facility_id",
+        "facility_name",
+        "start_time",
+        "end_time",
+        "payment_amount_inr",
+      ])
 }

@@ -84,7 +84,12 @@ export const getSlotsSortingParamsSchema = z.object({
   order: z.enum(["asc", "desc"]).default("asc"),
 })
 
+export const getSlotsAvailabilityAddonSchema = z.object({
+  date: z.string().date(),
+})
+
 export const getSlotsSchema = z.object({
   filters: getSlotsFiltersSchema.optional(),
   sort: getSlotsSortingParamsSchema.optional(),
+  availability: getSlotsAvailabilityAddonSchema.optional(),
 })

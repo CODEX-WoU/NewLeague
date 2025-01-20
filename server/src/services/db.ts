@@ -1,9 +1,11 @@
 import { DB } from "kysely-codegen"
-import { Pool } from "pg"
+import { Pool, types } from "pg"
 import { Kysely, PostgresDialect } from "kysely"
 
 import "../common/env"
 import appConfig from "../config/appConfig"
+
+types.setTypeParser(types.builtins.INT8, (val) => Number(val))
 
 const db = new Kysely<DB>({
   dialect: new PostgresDialect({
