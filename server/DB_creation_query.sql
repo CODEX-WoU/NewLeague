@@ -2,7 +2,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Create Enum types for the 'role' and 'status' fields
 CREATE TYPE user_role AS ENUM ('STUDENT', 'COACH', 'ADMIN');
-CREATE TYPE booking_status AS ENUM ('SCHEDULED', 'CANCELLED', 'USED', 'EXPIRED');
+CREATE TYPE booking_status AS ENUM ('RESERVED', 'CANCELLED', 'USED', 'EXPIRED');
 -- Create Enum type for 'day' field
 CREATE TYPE day_enum AS ENUM ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Friday', 'Saturday');
 

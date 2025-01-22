@@ -1,3 +1,4 @@
+import { UserRole } from "kysely-codegen"
 import "../common/env"
 
 export default {
@@ -15,4 +16,9 @@ export default {
   // Superadmin credentials
   superAdminEmail: process.env.SUPER_ADMIN_EMAIL,
   superAdminPassword: process.env.SUPER_ADMIN_PASSWORD,
+
+  // Booking related
+  rolesAllowedNonSameDayBooking: ["ADMIN", "SUPERADMIN"] as (UserRole | "SUPERADMIN")[],
+  allowedToBookUnderThem: ["ADMIN", "STUDENT", "COACH"] as UserRole[], // SUPERADMIN does not have userId so they must book under another user
+  studentDailyBookingLimit: 1,
 }

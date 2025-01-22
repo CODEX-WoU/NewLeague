@@ -6,6 +6,7 @@ import "../common/env"
 import appConfig from "../config/appConfig"
 
 types.setTypeParser(types.builtins.INT8, (val) => Number(val))
+types.setTypeParser(types.builtins.DATE, (val) => val.toString())
 
 const db = new Kysely<DB>({
   dialect: new PostgresDialect({

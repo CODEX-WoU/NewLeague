@@ -69,7 +69,6 @@ export const selectSlotsUsingFiltersService = async (
   availabilityParams?: IAvailabilityParams,
 ) => {
   var selectStmt = generateBaseSelectStmt(availabilityParams?.date ? new Date(availabilityParams.date) : undefined)
-  console.log(selectStmt.compile())
 
   // Adding filters
   if (filters) {
@@ -236,9 +235,14 @@ async function checkConflicts(newSlots: Insertable<Slots>[]): Promise<false | [b
   return false
 }
 
+/**
+ * returns a base select statement for `slots`, to build upon
+ * @param date add a date if an is_available field is required in output
+ * @returns
+ */
 function generateBaseSelectStmt(date?: Date) {
-  if (date)
-    return db
+  if (date) {
+    const selectStmt = db
       .with("slot_facility_join", (db) =>
         db
           .selectFrom("slots")
@@ -259,6 +263,7 @@ function generateBaseSelectStmt(date?: Date) {
                 .selectFrom(["booking"])
                 .whereRef("booking.slot_id", "=", eb.ref("slots.id"))
                 .where("booking.booking_date", "=", date)
+                .where("booking.status", "=", "RESERVED")
                 .select((eb) => eb.fn.count<number>("booking.id").as("count"))
                 .as("booking_count"),
             ]
@@ -284,7 +289,8 @@ function generateBaseSelectStmt(date?: Date) {
             .end()
             .as("is_available"),
       ])
-  else
+    return selectStmt
+  } else
     return db
       .with("slot_facility_join", (db) =>
         db
