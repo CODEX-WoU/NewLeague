@@ -1,11 +1,13 @@
 import { selectSlotsUsingFiltersService } from "../Slots/services"
-import { SlotUnavailableErr } from "../../common/custom_errors/slotErr"
+import { SlotUnavailableErr } from "../../common/custom_errors/bookingErr"
 import db from "../../services/db"
 import logger from "../../common/logger"
 import { ICustomBookingInsertable, IGetBookingsFilters, IGetBookingsSortingParams, IPagingParams } from "./interfaces"
 import { generateDateIgnoringTz } from "../../util/timeRelated"
-import { BookingStatus } from "kysely-codegen"
+import { Booking, BookingStatus } from "kysely-codegen"
 import { InvalidBookingStatusErr } from "../../common/custom_errors/bookingErr"
+import { Updateable } from "kysely"
+import EmptyObjectError from "../../common/custom_errors/emptyObjectErr"
 
 export const addBookingService = async (booking: ICustomBookingInsertable) => {
   // Checking if slot is available
@@ -122,6 +124,73 @@ export const getBookingsService = async (
 
   logger.debug("Ran complex SELECT on bookings")
   return bookings
+}
+
+export const getBookingByIdService = async (id: string) => {
+  const booking = await db
+    .selectFrom("booking")
+    .leftJoin("slots", "booking.slot_id", "slots.id")
+    .leftJoin("users", "booking.user_id", "users.id")
+    .leftJoin("facilities", "slots.facility_id", "facilities.id")
+    .select([
+      "booking.id as id",
+      "booking.booking_date",
+      "booking.slot_id",
+      "booking.status",
+      "booking.user_id",
+      "users.role",
+      "users.email",
+      "users.phone_no",
+      "users.name as booker_name",
+      "slots.start_time",
+      "slots.end_time",
+      "slots.day",
+      "slots.facility_id",
+      "facilities.name as facility_name",
+    ])
+    .where("booking.id", "=", id)
+    .executeTakeFirstOrThrow()
+
+  return booking
+}
+
+export const updateBookingByIdService = async (id: string, updatedBooking: Updateable<Booking>) => {
+  if (Object.keys(updatedBooking).length === 0) throw new EmptyObjectError()
+
+  const bookingInDb = await getBookingByIdService(id)
+
+  // making sure slot at updated date (if any) will be available
+  const slotId = updatedBooking.slot_id || bookingInDb.slot_id
+  if (updatedBooking.booking_date && typeof updatedBooking.booking_date != "string")
+    updatedBooking.booking_date = updatedBooking.booking_date.toISOString().slice(10)
+  const date = updatedBooking.booking_date || bookingInDb.booking_date.toString()
+
+  const slotInDb = (
+    await selectSlotsUsingFiltersService(
+      {
+        ids: [slotId],
+      },
+      undefined,
+      undefined,
+      {
+        date,
+      },
+    )
+  )[0]
+
+  // Check if, if status is provided, is it valid for the booking in question
+  if (updatedBooking.status && !isStatusValid(updatedBooking.status, slotInDb.end_time, date))
+    throw new InvalidBookingStatusErr()
+  // Check if slot is available after new changes (if any)
+  if ("is_available" in slotInDb && !slotInDb.is_available) throw new SlotUnavailableErr(date, slotId)
+
+  const newBooking = await db
+    .updateTable("booking")
+    .set(updatedBooking)
+    .where("booking.id", "=", id)
+    .returningAll()
+    .executeTakeFirstOrThrow()
+  return newBooking
 }
 
 // HELPER FUNCTIONS START HERE

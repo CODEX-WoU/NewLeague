@@ -3,6 +3,7 @@ import { z } from "zod"
 import appConfig from "../../config/appConfig"
 import { UserRole } from "kysely-codegen"
 import { generateDateIgnoringTz } from "../../util/timeRelated"
+import bookingsRouter from "./routes"
 
 export const addBookingRequestBodySchema = z
   .object({
@@ -56,3 +57,16 @@ export const getBookingsSchema = z
     sort: getBookingsSortingParamsSchema,
   })
   .partial()
+
+export const updateBookingSchema = z
+  .object({
+    bookingDate: z
+      .string()
+      .date()
+      .transform((bookingDate) => bookingDate.toString()),
+    status: z.enum(["RESERVED", "CANCELLED", "EXPIRED", "USED"]),
+    userId: z.string(),
+    slotId: z.string().uuid(),
+  })
+  .partial()
+  .transform((obj) => objectToSnake(obj))

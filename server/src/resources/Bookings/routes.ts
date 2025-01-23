@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { allowedNonSameDayBookingMiddleware, checkIfStudentUnderDailyBookingLimitMiddleware } from "./middlewares"
-import { addBookingController, getBookingsController } from "./controllers"
+import { addBookingController, getBookingsController, updateBookingController } from "./controllers"
 import { verifyRoleMiddleware } from "../Auth/middleware"
 
 const bookingsRouter = Router()
@@ -17,5 +17,6 @@ bookingsRouter.post(
   checkIfStudentUnderDailyBookingLimitMiddleware,
   addBookingController,
 )
+bookingsRouter.patch("/:id", verifyRoleMiddleware({ rolesAllowed: ["ADMIN", "SUPERADMIN"] }), updateBookingController)
 
 export default bookingsRouter

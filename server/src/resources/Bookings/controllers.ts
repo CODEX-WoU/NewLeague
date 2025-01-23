@@ -1,14 +1,17 @@
 import { Request, Response } from "express"
 import { UserRole } from "kysely-codegen"
-import { addBookingRequestBodySchema, getBookingsSchema } from "./zodSchemas"
+import { addBookingRequestBodySchema, getBookingsSchema, updateBookingSchema } from "./zodSchemas"
 import {
   globalErrorResponseMiddleware,
   internalServerErrorResponseMiddleware,
 } from "../../middlewares/errorResponseMiddleware"
-import { addBookingService, getBookingsService } from "./services"
-import { SlotUnavailableErr } from "../../common/custom_errors/slotErr"
+import { addBookingService, getBookingsService, updateBookingByIdService } from "./services"
+import { SlotUnavailableErr } from "../../common/custom_errors/bookingErr"
 import { isStringPositiveInteger } from "../../util/parsing"
 import { InvalidBookingStatusErr } from "../../common/custom_errors/bookingErr"
+import { z } from "zod"
+import { NoResultError } from "kysely"
+import EmptyObjectError from "../../common/custom_errors/emptyObjectErr"
 
 export const addBookingController = async (
   req: Request,
@@ -117,4 +120,46 @@ export const getBookingsController = async (
     success: true,
     data: bookings,
   })
+}
+
+export const updateBookingController = async (req: Request, res: Response<any, { role: UserRole | "SUPERADMIN" }>) => {
+  const id = req.params.id
+  try {
+    if (!id || !z.string().uuid().safeParse(id))
+      return globalErrorResponseMiddleware(req, res, 400, {
+        description: `Mandatory "id" path parameter not a valid UUID or missing`,
+      })
+
+    const bodyValidationResults = updateBookingSchema.safeParse(req.body)
+    if (!bodyValidationResults.success)
+      return globalErrorResponseMiddleware(req, res, 400, {
+        errors: bodyValidationResults.error.errors,
+        description: "Errors in request body schema",
+      })
+
+    const updateable = bodyValidationResults.data
+
+    const updateResult = await updateBookingByIdService(id, updateable)
+    return res.status(200).json({
+      success: true,
+      data: updateResult,
+    })
+  } catch (error) {
+    if (error instanceof NoResultError) {
+      return globalErrorResponseMiddleware(req, res, 404, { description: `No booking with id=${id} found` })
+    } else if (error instanceof SlotUnavailableErr) {
+      return globalErrorResponseMiddleware(req, res, 409, { description: "Slot is unavailable" })
+    } else if (error instanceof EmptyObjectError) {
+      return globalErrorResponseMiddleware(req, res, 400, { description: "Update payload cannot be empty" })
+    } else if (error instanceof InvalidBookingStatusErr) {
+      return globalErrorResponseMiddleware(req, res, 400, {
+        description: "Given status is invalid for current state given booking",
+      })
+    } else {
+      return internalServerErrorResponseMiddleware(res, {
+        errObj: error,
+        desc: "Error occurred in updateBookingController",
+      })
+    }
+  }
 }

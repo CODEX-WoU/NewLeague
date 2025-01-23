@@ -280,6 +280,7 @@ function generateBaseSelectStmt(date?: Date) {
         "start_time",
         "end_time",
         "payment_amount_inr",
+        // is_available is false if number of bookings for given date and slot is already more than courts of facility
         (eb) =>
           eb
             .case()
