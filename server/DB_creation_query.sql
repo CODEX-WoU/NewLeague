@@ -5,6 +5,7 @@ CREATE TYPE user_role AS ENUM ('STUDENT', 'COACH', 'ADMIN');
 CREATE TYPE booking_status AS ENUM ('RESERVED', 'CANCELLED', 'USED', 'EXPIRED');
 -- Create Enum type for 'day' field
 CREATE TYPE day_enum AS ENUM ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Friday', 'Saturday');
+CREATE TYPE otp_function_enum AS ENUM ('USER_SIGNUP', 'USER_APPROVAL', 'PASSWORD_RESET');
 
 
 -- Create the 'users' table
@@ -53,19 +54,21 @@ CREATE TABLE facilities (
 	CONSTRAINT facilities_category_fkey FOREIGN KEY (category_id) REFERENCES public.facility_categories(id) ON DELETE CASCADE
 );
 
+
 -- Create the 'slots' table
-CREATE TABLE slots (
+CREATE TABLE public.slots (
 	id uuid DEFAULT uuid_generate_v4() NOT NULL,
 	start_time time NOT NULL,
 	end_time time NOT NULL,
 	facility_id uuid NOT NULL,
 	courts_available_at_slot int4 NOT NULL,
-	"day" public.day_enum NULL,
+	"day" public.day_enum NOT NULL,
 	payment_amount_inr float8 NULL,
 	CONSTRAINT slots_pkey PRIMARY KEY (id),
-	CONSTRAINT slots_facility_id_fkey FOREIGN KEY (facility_id) REFERENCES facilities(id),
-    CONSTRAINT unique_slot_combination UNIQUE (start_time, end_time, facility_id, "day")
+	CONSTRAINT unique_slot_combination UNIQUE (start_time, end_time, facility_id, day),
+	CONSTRAINT slots_facility_id_fkey FOREIGN KEY (facility_id) REFERENCES public.facilities(id)
 );
+
 -- Create the 'booking' table
 CREATE TABLE booking (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -75,5 +78,15 @@ CREATE TABLE booking (
     status booking_status NOT NULL
 );
 
-
+-- Create the 'OTP' table
+CREATE TABLE otps (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    otp_val INTEGER NOT NULL,
+    user_id varchar NOT NULL,
+    payload JSONB,
+    valid_till TIMESTAMP not null,
+    is_used BOOLEAN not NULL,
+    for_function otp_function_enum NOT NULL,
+    CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id)
+);
 
