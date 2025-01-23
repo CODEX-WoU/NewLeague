@@ -1,6 +1,11 @@
 import { Router } from "express"
 import { allowedNonSameDayBookingMiddleware, checkIfStudentUnderDailyBookingLimitMiddleware } from "./middlewares"
-import { addBookingController, getBookingsController, updateBookingController } from "./controllers"
+import {
+  addBookingController,
+  cancelBookingController,
+  getBookingsController,
+  updateBookingController,
+} from "./controllers"
 import { verifyRoleMiddleware } from "../Auth/middleware"
 
 const bookingsRouter = Router()
@@ -16,6 +21,11 @@ bookingsRouter.post(
   allowedNonSameDayBookingMiddleware,
   checkIfStudentUnderDailyBookingLimitMiddleware,
   addBookingController,
+)
+bookingsRouter.patch(
+  "/:id/cancel",
+  verifyRoleMiddleware({ rolesAllowed: ["ADMIN", "SUPERADMIN", "COACH", "STUDENT"] }),
+  cancelBookingController,
 )
 bookingsRouter.patch("/:id", verifyRoleMiddleware({ rolesAllowed: ["ADMIN", "SUPERADMIN"] }), updateBookingController)
 

@@ -3,7 +3,6 @@ import { z } from "zod"
 import appConfig from "../../config/appConfig"
 import { UserRole } from "kysely-codegen"
 import { generateDateIgnoringTz } from "../../util/timeRelated"
-import bookingsRouter from "./routes"
 
 export const addBookingRequestBodySchema = z
   .object({

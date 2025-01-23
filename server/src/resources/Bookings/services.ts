@@ -26,7 +26,7 @@ export const addBookingService = async (booking: ICustomBookingInsertable) => {
 
   // Handling status
   if (typeof booking.status === "undefined") {
-    if (generateDateIgnoringTz() > new Date(`${booking.booking_date}T${slot.end_time}Z`)) booking.status = "RESERVED"
+    if (generateDateIgnoringTz() < new Date(`${booking.booking_date}T${slot.end_time}Z`)) booking.status = "RESERVED"
     else booking.status = "EXPIRED"
   }
 
@@ -154,7 +154,11 @@ export const getBookingByIdService = async (id: string) => {
   return booking
 }
 
-export const updateBookingByIdService = async (id: string, updatedBooking: Updateable<Booking>) => {
+export const updateBookingByIdService = async (
+  id: string,
+  updatedBooking: Updateable<Booking>,
+  enforcedUserId?: string,
+) => {
   if (Object.keys(updatedBooking).length === 0) throw new EmptyObjectError()
 
   const bookingInDb = await getBookingByIdService(id)
@@ -184,12 +188,12 @@ export const updateBookingByIdService = async (id: string, updatedBooking: Updat
   // Check if slot is available after new changes (if any)
   if ("is_available" in slotInDb && !slotInDb.is_available) throw new SlotUnavailableErr(date, slotId)
 
-  const newBooking = await db
-    .updateTable("booking")
-    .set(updatedBooking)
-    .where("booking.id", "=", id)
-    .returningAll()
-    .executeTakeFirstOrThrow()
+  let updateStmt = db.updateTable("booking").set(updatedBooking).where("booking.id", "=", id)
+
+  // Enforce a user ID when updating
+  if (enforcedUserId) updateStmt = updateStmt.where("booking.user_id", "=", enforcedUserId)
+
+  const newBooking = await updateStmt.returningAll().executeTakeFirstOrThrow()
   return newBooking
 }
 

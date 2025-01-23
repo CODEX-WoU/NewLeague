@@ -163,3 +163,34 @@ export const updateBookingController = async (req: Request, res: Response<any, {
     }
   }
 }
+
+export const cancelBookingController = async (
+  req: Request<{ id: string }>,
+  res: Response<any, { role: UserRole | "SUPERADMIN"; userId: string }>,
+) => {
+  const id = req.params.id
+  try {
+    if (!id || !z.string().uuid().safeParse(id))
+      return globalErrorResponseMiddleware(req, res, 400, {
+        description: `Mandatory "id" path parameter not a valid UUID or missing`,
+      })
+
+    var { role, userId } = res.locals
+    var cancelledBooking
+    if (!(role === "ADMIN" || role === "SUPERADMIN"))
+      cancelledBooking = await updateBookingByIdService(id, { status: "CANCELLED" }, userId)
+    else cancelledBooking = await updateBookingByIdService(id, { status: "CANCELLED" })
+
+    return res.status(200).json({ success: true, data: cancelledBooking })
+  } catch (err) {
+    if (err instanceof NoResultError) {
+      return globalErrorResponseMiddleware(req, res, 404, { description: `No booking with id=${id} found` })
+    } else if (err instanceof InvalidBookingStatusErr) {
+      return globalErrorResponseMiddleware(req, res, 400, { description: "This booking cannot be cancelled" })
+    } else
+      return internalServerErrorResponseMiddleware(res, {
+        errObj: err,
+        desc: "Error occurred in cancelBooking controller",
+      })
+  }
+}
