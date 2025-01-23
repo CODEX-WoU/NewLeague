@@ -5,7 +5,7 @@ import {
   globalErrorResponseMiddleware,
   internalServerErrorResponseMiddleware,
 } from "../../middlewares/errorResponseMiddleware"
-import { addBookingService, getBookingsService, updateBookingByIdService } from "./services"
+import { addBookingService, deleteBookingById, getBookingsService, updateBookingByIdService } from "./services"
 import { SlotUnavailableErr } from "../../common/custom_errors/bookingErr"
 import { isStringPositiveInteger } from "../../util/parsing"
 import { InvalidBookingStatusErr } from "../../common/custom_errors/bookingErr"
@@ -192,5 +192,30 @@ export const cancelBookingController = async (
         errObj: err,
         desc: "Error occurred in cancelBooking controller",
       })
+  }
+}
+
+/**
+ * Controller to outright delete a booking. MAKE SURE TO VALIDATE ROLE OF USER BEFORE USING THIS CONTROLLER
+ * @param req
+ * @param res
+ */
+export const deleteBookingController = async (req: Request<{ id: string }>, res: Response) => {
+  const id = req.params.id
+  if (!id || !z.string().uuid().safeParse(id).success) {
+    return globalErrorResponseMiddleware(req, res, 400, { description: "No mandatory path parameter 'id' in URL" })
+  }
+
+  try {
+    await deleteBookingById(id)
+    return res.status(204).send()
+  } catch (err) {
+    if (err instanceof NoResultError)
+      return globalErrorResponseMiddleware(req, res, 404, { description: `No booking with id = ${id} found` })
+
+    return internalServerErrorResponseMiddleware(res, {
+      errObj: err,
+      desc: "Error occurred in deleteBookingController",
+    })
   }
 }

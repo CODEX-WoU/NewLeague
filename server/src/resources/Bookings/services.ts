@@ -151,6 +151,8 @@ export const getBookingByIdService = async (id: string) => {
     .where("booking.id", "=", id)
     .executeTakeFirstOrThrow()
 
+  logger.debug("Retrieved booking with id = " + id)
+
   return booking
 }
 
@@ -194,7 +196,17 @@ export const updateBookingByIdService = async (
   if (enforcedUserId) updateStmt = updateStmt.where("booking.user_id", "=", enforcedUserId)
 
   const newBooking = await updateStmt.returningAll().executeTakeFirstOrThrow()
+
+  logger.info(`Updated booking with ID=${bookingInDb.id}`)
+
   return newBooking
+}
+
+export const deleteBookingById = async (id: string) => {
+  const deletedBooking = await db.deleteFrom("booking").where("id", "=", id).returning("id").executeTakeFirstOrThrow()
+
+  logger.info("DELETED booking with id = " + id)
+  return deletedBooking
 }
 
 // HELPER FUNCTIONS START HERE

@@ -20,5 +20,6 @@ export default {
   // Booking related
   rolesAllowedNonSameDayBooking: ["ADMIN", "SUPERADMIN"] as (UserRole | "SUPERADMIN")[],
   allowedToBookUnderThem: ["ADMIN", "STUDENT", "COACH"] as UserRole[], // SUPERADMIN does not have userId so they must book under another user
+  allowedToDeleteBookings: ["ADMIN", "SUPERADMIN"] as (UserRole | "SUPERADMIN")[],
   studentDailyBookingLimit: 1,
 }

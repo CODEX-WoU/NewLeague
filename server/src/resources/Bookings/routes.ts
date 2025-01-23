@@ -3,10 +3,12 @@ import { allowedNonSameDayBookingMiddleware, checkIfStudentUnderDailyBookingLimi
 import {
   addBookingController,
   cancelBookingController,
+  deleteBookingController,
   getBookingsController,
   updateBookingController,
 } from "./controllers"
 import { verifyRoleMiddleware } from "../Auth/middleware"
+import appConfig from "../../config/appConfig"
 
 const bookingsRouter = Router()
 
@@ -28,5 +30,10 @@ bookingsRouter.patch(
   cancelBookingController,
 )
 bookingsRouter.patch("/:id", verifyRoleMiddleware({ rolesAllowed: ["ADMIN", "SUPERADMIN"] }), updateBookingController)
+bookingsRouter.delete(
+  "/:id",
+  verifyRoleMiddleware({ rolesAllowed: appConfig.allowedToDeleteBookings }),
+  deleteBookingController,
+)
 
 export default bookingsRouter
