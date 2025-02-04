@@ -82,7 +82,7 @@ CREATE TABLE booking (
 CREATE TABLE otps (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     otp_val INTEGER NOT NULL,
-    user_id varchar NOT NULL,
+    user_id varchar,
     payload JSONB,
     valid_till TIMESTAMP not null,
     is_used BOOLEAN not NULL,

@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer"
 import nodeMailerConfig from "../config/nodeMailerConfig"
+import logger from "../common/logger"
 
 const mailTransporter = nodemailer.createTransport({
   host: nodeMailerConfig.host,
@@ -9,5 +10,15 @@ const mailTransporter = nodemailer.createTransport({
     pass: nodeMailerConfig.password,
   },
 })
+
+export const verifySmtpConnection = () => {
+  mailTransporter.verify(function (error, success) {
+    if (error) {
+      logger.error(error, "SMTP connection is down/not working")
+    } else {
+      logger.info("SMTP connection is working properly ")
+    }
+  })
+}
 
 export default mailTransporter
