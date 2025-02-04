@@ -4,22 +4,24 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TYPE user_role AS ENUM ('STUDENT', 'COACH', 'ADMIN');
 CREATE TYPE booking_status AS ENUM ('RESERVED', 'CANCELLED', 'USED', 'EXPIRED');
 -- Create Enum type for 'day' field
-CREATE TYPE day_enum AS ENUM ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Friday', 'Saturday');
+CREATE TYPE day_enum AS ENUM ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
 CREATE TYPE otp_function_enum AS ENUM ('USER_SIGNUP', 'USER_APPROVAL', 'PASSWORD_RESET');
 
 
 -- Create the 'users' table
-CREATE TABLE users (
-	id varchar NOT NULL,
-	"name" varchar NOT NULL,
+CREATE TABLE public.users (
+	id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	name varchar NOT NULL,
 	email varchar NOT NULL,
 	phone_no varchar NULL,
 	"role" public.user_role NOT NULL,
 	"password" varchar NOT NULL,
 	is_deleted bool DEFAULT false NOT NULL,
+	uni_id varchar NULL,
 	CONSTRAINT users_pkey PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX users_email_unique_active ON public.users USING btree (email) WHERE (is_deleted = false);
+CREATE UNIQUE INDEX users_uni_id_unique_active ON public.users USING btree (uni_id) WHERE (is_deleted = false);
 
 -- Create the 'programmes' table
 CREATE TABLE programmes (
