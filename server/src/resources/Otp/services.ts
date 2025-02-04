@@ -93,6 +93,7 @@ export const verifyOtpService = async (
     .where("otps.is_used", "=", false)
     .where("otps.valid_till", ">", new Date())
 
+  // UNTESTED
   if (options.userId)
     otpSelectStmt = otpSelectStmt
       .where("otps.user_id", "=", options.userId)
