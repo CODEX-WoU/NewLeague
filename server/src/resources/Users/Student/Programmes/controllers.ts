@@ -13,6 +13,7 @@ import {
 } from "./services"
 import EmptyObjectError from "../../../../common/custom_errors/emptyObjectErr"
 import { NoResultError } from "kysely"
+import { z } from "zod"
 
 export const getProgrammeController = async (req: Request<{ id?: string }>, res: Response) => {
   const id = req.params.id
@@ -44,6 +45,10 @@ export const getProgrammesController = async (
     var programmes
     if (req.query.commaSeperatedIds) {
       const ids = req.query.commaSeperatedIds.split(",")
+
+      if (!z.string().uuid().array().safeParse(ids).success)
+        return globalErrorResponseMiddleware(req, res, 400, { description: "All ids have to be uuids" })
+
       programmes = await getProgrammesService(ids)
     } else programmes = await getProgrammesService()
 

@@ -53,6 +53,7 @@ export async function getProgrammeService(id: string) {
 
 export async function getProgrammesService(ids?: string[]) {
   var selectStmt = db.selectFrom("programmes").selectAll()
+  console.log(ids)
   if (Array.isArray(ids)) selectStmt = selectStmt.where("id", "in", ids)
 
   const programmes = await selectStmt.execute()

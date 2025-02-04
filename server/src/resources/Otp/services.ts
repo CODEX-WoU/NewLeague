@@ -1,10 +1,10 @@
 import { Insertable, Updateable } from "kysely"
-import { Otps } from "kysely-codegen"
+import { OtpFunctionEnum, Otps } from "kysely-codegen"
 import db from "../../services/db"
 import logger from "../../common/logger"
 import { OtpTimestampInvalidErr } from "../../common/custom_errors/otpErr"
 import mailTransporter from "../../services/nodemailer"
-import nodeMailerConfig from "../../config/nodeMailerConfig"
+import nodeMailerConfig from "../../config/nodeMailerAndOtpConfig"
 
 export const addOtpService = async (otp: Insertable<Otps>) => {
   if (new Date(otp.valid_till) < new Date()) throw new OtpTimestampInvalidErr()
@@ -59,24 +59,32 @@ export const sendOtpService = async (
 ) => {
   const otpToSend = otp.idOrRawValue == "RAW" ? otp.value : (await getOtpByIdService(otp.value)).otp_val
 
-  const sentMsg = await mailTransporter.sendMail({
-    from: `"${nodeMailerConfig.user}" <${nodeMailerConfig.senderName}>`,
-    to: toMailAddresses.join(","),
-    subject: subject,
-    text: `Hi, your OTP is ${otpToSend}.\n${additionalBodyText || ""}`,
-  })
-
-  return sentMsg.accepted
+  try {
+    const sentMsg = await mailTransporter.sendMail({
+      from: `"${nodeMailerConfig.senderName}" <${nodeMailerConfig.user}>`,
+      to: toMailAddresses.join(","),
+      subject: subject,
+      text: `Hi, your OTP is ${otpToSend}.\n${additionalBodyText || ""}`,
+    })
+    return sentMsg.accepted
+  } catch (error) {
+    logger.error(error)
+    return null
+  }
 }
 
 /**
  * Checks if an OTP exists with all the given parameters
  * @param otpId
- * @param otpToVerify
+ * @param otpToVerify the value of OTP provided by user
  * @param userId
  * @returns
  */
-export const verifyOtp = async (otpId: string, otpToVerify: number | string, userId?: string) => {
+export const verifyOtpService = async (
+  otpId: string,
+  otpToVerify: number | string,
+  options: { userId?: string; forFunction?: OtpFunctionEnum },
+) => {
   var otpSelectStmt = db
     .selectFrom("otps")
     .selectAll()
@@ -85,7 +93,19 @@ export const verifyOtp = async (otpId: string, otpToVerify: number | string, use
     .where("otps.is_used", "=", false)
     .where("otps.valid_till", ">", new Date())
 
-  if (userId) otpSelectStmt = otpSelectStmt.where("otps.user_id", "=", userId)
+  if (options.userId)
+    otpSelectStmt = otpSelectStmt
+      .where("otps.user_id", "=", options.userId)
+      .where((eb) =>
+        eb.and([
+          eb
+            .selectFrom("users")
+            .select("is_deleted")
+            .whereRef("users.id", "=", "otps.user_id")
+            .where("is_deleted", "=", false),
+        ]),
+      )
+  if (options.forFunction) otpSelectStmt = otpSelectStmt.where("otps.for_function", "=", options.forFunction)
 
   const otp = await otpSelectStmt.executeTakeFirstOrThrow()
 

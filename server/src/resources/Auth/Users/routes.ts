@@ -4,8 +4,7 @@ import { signInController } from "./controllers"
 
 const userRouter = Router()
 
-userRouter.post("/signin", signInController)
-
 userRouter.use("/student", studentAuthRouter)
+userRouter.post("/signin", signInController)
 
 export default userRouter

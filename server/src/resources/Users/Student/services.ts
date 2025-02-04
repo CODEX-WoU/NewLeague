@@ -88,7 +88,7 @@ export const addStudentService = async (
 
     if (!addedUser)
       throw new Error("Could not add user to DB when trying to insert student to DB. Rolling back transaction")
-
+    console.log(studentInfo)
     const addedStudent = await trx
       .insertInto("students")
       .values({ ...studentInfo, student_id: addedUser.id })

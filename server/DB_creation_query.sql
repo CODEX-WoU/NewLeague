@@ -16,7 +16,7 @@ CREATE TABLE users (
 	phone_no varchar NULL,
 	"role" public.user_role NOT NULL,
 	"password" varchar NOT NULL,
-	is_deleted bool DEFAULT false NULL,
+	is_deleted bool DEFAULT false NOT NULL,
 	CONSTRAINT users_pkey PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX users_email_unique_active ON public.users USING btree (email) WHERE (is_deleted = false);

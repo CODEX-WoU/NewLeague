@@ -9,4 +9,5 @@ export default {
   port: Number(process.env.SMTP_PORT) || -1,
   user: process.env.SMTP_USER || "SMTP_USER not set",
   password: process.env.SMTP_PASSWORD || "SMTP_PASSWORD NOT SET",
+  otpExpiresAtInMinutes: 10,
 }
