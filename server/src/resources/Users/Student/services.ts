@@ -12,6 +12,7 @@ export const fetchStudentsService = async (
   var selectStmt = db
     .selectFrom("users")
     .where("role", "=", "STUDENT")
+    .where("users.is_deleted", "=", false)
     .innerJoin("students", "users.id", "students.student_id")
     .innerJoin("programmes", "students.programme_id", "programmes.id")
     .select([
@@ -58,6 +59,7 @@ export const getStudentByIdService = async (id: string) => {
     .selectFrom("users")
     .where("users.id", "=", id)
     .where("users.role", "=", "STUDENT")
+    .where("users.is_deleted", "=", false)
     .leftJoin("students", "users.id", "students.student_id")
     .leftJoin("programmes", "students.programme_id", "programmes.id")
     .select([
@@ -140,15 +142,16 @@ export const deleteStudentByIdService = async (id: string) => {
   const deletedStudentId = await db.transaction().execute(async (trx) => {
     await trx.deleteFrom("students").where("student_id", "=", id).execute()
     const deletedStudentId = await trx
-      .deleteFrom("users")
+      .updateTable("users")
       .where("id", "=", id)
       .where("role", "=", "STUDENT")
+      .set({ is_deleted: true })
       .returning("id")
       .executeTakeFirstOrThrow()
 
     return deletedStudentId
   })
 
-  logger.info(`Deleted STUDENT with id=${deletedStudentId}`)
+  logger.info(`Soft deleted STUDENT with id=${deletedStudentId}`)
   return deletedStudentId
 }

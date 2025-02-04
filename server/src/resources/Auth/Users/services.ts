@@ -29,7 +29,12 @@ export const signInUserService = async (
     return createAccessTokenService({ role: "SUPERADMIN" })
   }
   try {
-    const userRecord = await db.selectFrom("users").selectAll().where("email", "ilike", email).executeTakeFirstOrThrow()
+    const userRecord = await db
+      .selectFrom("users")
+      .selectAll()
+      .where("email", "ilike", email)
+      .where("is_deleted", "=", false)
+      .executeTakeFirstOrThrow()
 
     const isPswdValid = await verifyPasswordService(password, userRecord.password)
     if (!isPswdValid) throw new InvalidCredentialsErr()

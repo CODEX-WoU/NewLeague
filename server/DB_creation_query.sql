@@ -10,13 +10,16 @@ CREATE TYPE otp_function_enum AS ENUM ('USER_SIGNUP', 'USER_APPROVAL', 'PASSWORD
 
 -- Create the 'users' table
 CREATE TABLE users (
-    id VARCHAR PRIMARY KEY,
-    name VARCHAR NOT NULL,
-    email VARCHAR NOT NULL UNIQUE,
-    phone_no VARCHAR,
-    role user_role NOT NULL,
-    password VARCHAR NOT NULL
+	id varchar NOT NULL,
+	"name" varchar NOT NULL,
+	email varchar NOT NULL,
+	phone_no varchar NULL,
+	"role" public.user_role NOT NULL,
+	"password" varchar NOT NULL,
+	is_deleted bool DEFAULT false NULL,
+	CONSTRAINT users_pkey PRIMARY KEY (id)
 );
+CREATE UNIQUE INDEX users_email_unique_active ON public.users USING btree (email) WHERE (is_deleted = false);
 
 -- Create the 'programmes' table
 CREATE TABLE programmes (
