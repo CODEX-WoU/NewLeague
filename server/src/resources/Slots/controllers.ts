@@ -94,6 +94,7 @@ export const getSlotsController = async (req: Request, res: Response) => {
       })
 
     const filtersAndSorters = bodyValidation.data
+    console.log(filtersAndSorters)
     const slots = await selectSlotsUsingFiltersService(
       filtersAndSorters.filters,
       filtersAndSorters.sort,

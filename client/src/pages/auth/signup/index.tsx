@@ -9,7 +9,7 @@ import {
   getBranchOptions,
 } from "./placeholderData";
 
-export const SignUp = () => {
+const SignUp = () => {
   return (
     <div className="min-h-screen flex">
       {/* Hero section - 40% width */}

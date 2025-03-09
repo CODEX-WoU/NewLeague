@@ -3,32 +3,37 @@ import HomePage from "../pages/homepage";
 import About from "../pages/about";
 import SignIn from "../pages/auth/signin";
 import Layout from "./Outlet";
-import Signup from "../pages/auth/signup";
+import SignUp from "../pages/auth/signup";
+import SlotBooking from "../pages/book_slot";
 
 const router = createBrowserRouter([
   {
-    element: Layout(),
+    element: <Layout></Layout>,
     children: [
       {
         path: "/",
-        element: HomePage(),
+        element: <HomePage />,
       },
       {
         path: "/about",
-        element: About(),
+        element: <About />,
       },
       {
         path: "/auth",
         children: [
           {
             path: "/auth/signin",
-            element: SignIn(),
+            element: <SignIn />,
           },
           {
             path: "/auth/student/signup",
-            element: Signup(),
+            element: <SignUp />,
           },
         ],
+      },
+      {
+        path: "/book-slots",
+        element: <SlotBooking />,
       },
     ],
   },

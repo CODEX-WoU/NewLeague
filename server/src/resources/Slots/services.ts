@@ -69,13 +69,15 @@ export const selectSlotsUsingFiltersService = async (
   availabilityParams?: IAvailabilityParams,
 ) => {
   var selectStmt = generateBaseSelectStmt(availabilityParams?.date ? new Date(availabilityParams.date) : undefined)
-
   // Adding filters
   if (filters) {
     if ("ids" in filters) selectStmt = selectStmt.where("id", "in", filters.ids)
     else {
       if (filters.days) selectStmt = selectStmt.where("day", "in", filters.days)
-      if (filters.facilities) selectStmt = selectStmt.where("facility_id", "in", filters.facilities)
+      if (filters.facilities) {
+        console.log(filters.facilities)
+        selectStmt = selectStmt.where("facility_id", "in", filters.facilities)
+      }
       if (filters.startsByRange) {
         if (filters.startsByRange.gte) selectStmt = selectStmt.where("start_time", ">=", filters.startsByRange.gte)
         if (filters.startsByRange.lte) selectStmt = selectStmt.where("start_time", "<=", filters.startsByRange.lte)
