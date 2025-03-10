@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { server } from "../../config/axiosConfig";
+import { useNavigate } from "react-router-dom";
+
 interface Category {
   id: string;
   category_name: string;
@@ -22,13 +23,14 @@ interface Slot {
   day: string;
 }
 
-const SlotBooking = () => {
+const SlotBooking: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [facilities, setFacilities] = useState<Facility[]>([]);
   const [slots, setSlots] = useState<Slot[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedFacility, setSelectedFacility] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
@@ -44,7 +46,6 @@ const SlotBooking = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        console.log(res.data);
         setCategories(res.data.data);
       } catch (err) {
         console.error("Error fetching categories", err);
@@ -83,8 +84,6 @@ const SlotBooking = () => {
       const filteredSlots = res.data.data.filter(
         (slot) => slot.day === todayDay
       );
-      console.log(facilityId);
-      console.log(res.data);
       setSlots(filteredSlots);
     } catch (err) {
       console.error("Error fetching slots", err);
@@ -93,8 +92,31 @@ const SlotBooking = () => {
     }
   };
 
+  const bookSlot = async (slotId: string) => {
+    setLoading(true);
+    try {
+      const res = await server.post<{ success: boolean; data: any }>(
+        "/booking",
+        { bookingDate: today, slotId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.data.success) {
+        setFeedback("Booking successful!");
+      } else {
+        setFeedback("Booking failed. Please try again.");
+      }
+    } catch (err) {
+      console.error("Error booking slot", err);
+      setFeedback("Error booking slot. Please try again.");
+    } finally {
+      setLoading(false);
+      setTimeout(() => setFeedback(null), 3000);
+    }
+  };
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
+      {feedback && <p className="text-center text-blue-800">{feedback}</p>}
       <h2 className="text-xl font-bold mb-4">Select a Category</h2>
       <div className="flex gap-4 overflow-x-auto">
         {categories.map((category) => (
@@ -164,6 +186,7 @@ const SlotBooking = () => {
                         : "bg-gray-400 text-gray-600 cursor-not-allowed"
                     }`}
                     disabled={!slot.is_available}
+                    onClick={() => bookSlot(slot.id)}
                   >
                     Select Slot
                   </button>
