@@ -16,7 +16,7 @@ const TheHeader = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  const navigLinks = { home: "/", about: "/about" };
+  const navigLinks = { home: "/", about: "/about", slotBooking: "/book-slots" };
 
   return (
     <div
@@ -46,7 +46,7 @@ const TheHeader = () => {
               <a>FACILITIES</a>
             </li>
             <li>
-              <a>BOOKING</a>
+              <Link to={navigLinks.slotBooking}>BOOKINGS</Link>
             </li>
             <li>
               <a>PRO SHOP</a>
@@ -80,7 +80,7 @@ const TheHeader = () => {
             <a>FACILITIES</a>
           </li>
           <li>
-            <a>BOOKING</a>
+            <Link to={navigLinks.slotBooking}>BOOKING</Link>
           </li>
           <li>
             <a>PRO SHOP</a>

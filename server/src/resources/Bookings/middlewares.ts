@@ -51,8 +51,7 @@ export const checkIfStudentUnderDailyBookingLimitMiddleware = async (
 
     // Rule only applies to student
     if (role != "STUDENT") return next()
-
-    const bookings = await getBookingsService({ bookingDates: [new Date(generateDateIgnoringTz())], userIds: [userId] })
+    const bookings = await getBookingsService({ bookingDates: [new Date()], userIds: [userId] })
     if (bookings.filter((booking) => booking.status !== "CANCELLED").length >= appConfig.studentDailyBookingLimit)
       return globalErrorResponseMiddleware(req, res, 400, { description: "STUDENT has exhausted daily booking limt" })
     else return next()

@@ -30,8 +30,10 @@ const SlotBooking: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedFacility, setSelectedFacility] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [feedback, setFeedback] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const [toastMessage, setToastMessage] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   const token = localStorage.getItem("token");
   const today = new Date().toISOString().split("T")[0];
@@ -101,22 +103,43 @@ const SlotBooking: React.FC = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.data.success) {
-        setFeedback("Booking successful!");
+        setToastMessage({ message: "Booking successful!", type: "success" });
       } else {
-        setFeedback("Booking failed. Please try again.");
+        setToastMessage({
+          message: "Booking failed. Please try again.",
+          type: "error",
+        });
       }
-    } catch (err) {
-      console.error("Error booking slot", err);
-      setFeedback("Error booking slot. Please try again.");
+    } catch (err: any) {
+      if (err.response?.status === 400) {
+        setToastMessage({
+          message: "User is only allowed to book one slot per day.",
+          type: "error",
+        });
+      } else {
+        setToastMessage({
+          message: "Error booking slot. Please try again.",
+          type: "error",
+        });
+      }
     } finally {
       setLoading(false);
-      setTimeout(() => setFeedback(null), 3000);
     }
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      {feedback && <p className="text-center text-blue-800">{feedback}</p>}
+    <div className="p-6 max-w-4xl mx-auto min-h-[80vh]">
+      {toastMessage && (
+        <div className="z-50 toast toast-end toast-center">
+          <div
+            className={`alert ${
+              toastMessage.type === "success" ? "alert-success" : "alert-info"
+            }`}
+          >
+            <span>{toastMessage.message}</span>
+          </div>
+        </div>
+      )}
       <h2 className="text-xl font-bold mb-4">Select a Category</h2>
       <div className="flex gap-4 overflow-x-auto">
         {categories.map((category) => (
