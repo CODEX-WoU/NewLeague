@@ -7,6 +7,7 @@ import {
 import appConfig from "../../config/appConfig"
 import { getBookingsService } from "./services"
 import { generateDateIgnoringTz } from "../../util/timeRelated"
+import logger from "../../common/logger"
 
 /**
  * Only goes to next middleware if the user's role is allowed to book slots at a date that is not today
@@ -52,9 +53,10 @@ export const checkIfStudentUnderDailyBookingLimitMiddleware = async (
     // Rule only applies to student
     if (role != "STUDENT") return next()
     const bookings = await getBookingsService({ bookingDates: [new Date()], userIds: [userId] })
-    if (bookings.filter((booking) => booking.status !== "CANCELLED").length >= appConfig.studentDailyBookingLimit)
-      return globalErrorResponseMiddleware(req, res, 400, { description: "STUDENT has exhausted daily booking limt" })
-    else return next()
+    if (bookings.filter((booking) => booking.status !== "CANCELLED").length >= appConfig.studentDailyBookingLimit) {
+      logger.debug(`STUDENT with id=${userId} denied booking due to exhausted daily booking limit`)
+      return globalErrorResponseMiddleware(req, res, 400, { description: "STUDENT has exhausted daily booking limit" })
+    } else return next()
   } catch (error) {
     return internalServerErrorResponseMiddleware(res, {
       errObj: error,
