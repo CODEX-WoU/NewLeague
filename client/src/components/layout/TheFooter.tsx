@@ -58,13 +58,10 @@ export const TheFooter = () => {
             Sports Facilities
           </a>
           <a href="#" className="hover:text-primary transition-colors">
-            [Placeholder tag]
+            Meet the Team
           </a>
           <a href="#" className="hover:text-primary transition-colors">
-            [Placeholder tag]
-          </a>
-          <a href="#" className="hover:text-primary transition-colors">
-            [Placeholder tag]
+            Contact Us
           </a>
         </nav>
 
