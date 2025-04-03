@@ -265,7 +265,7 @@ function generateBaseSelectStmt(date?: Date) {
                 .selectFrom(["booking"])
                 .whereRef("booking.slot_id", "=", eb.ref("slots.id"))
                 .where("booking.booking_date", "=", date)
-                .where("booking.status", "=", "RESERVED")
+                .where("booking.status", "in", ["EXPIRED", "RESERVED", "USED"])
                 .select((eb) => eb.fn.count<number>("booking.id").as("count"))
                 .as("booking_count"),
             ]
@@ -286,7 +286,7 @@ function generateBaseSelectStmt(date?: Date) {
         (eb) =>
           eb
             .case()
-            .when("booking_count", ">=", eb.ref("number_of_courts"))
+            .when("booking_count", ">=", eb.ref("courts_available_at_slot"))
             .then(false)
             .else(true)
             .end()
