@@ -1,39 +1,24 @@
-# ---- Base Node ----
-# Use an official Node.js LTS version. slim variant for smaller size.
-# Using Node 20 based on your @types/node dependency
 FROM node:20-slim AS base
 WORKDIR /usr/src/app
-# Copy package.json and package-lock.json (if available)
 COPY package*.json ./
 
 # ---- Dependencies ----
-# Install necessary dependencies for building
 FROM base AS dependencies
-# Install all dependencies including devDependencies needed for build and kysely-codegen
 RUN npm install
-# Copy the rest of your application source code
 COPY . .
-# Ensure the CA certificate for the database is copied if needed by kysely-codegen
-# Assuming ca.crt is in the same directory as the Dockerfile
+# Ensure the CA certificate for the database is copied if needed by kysely
 COPY ca.crt ./ca.crt
-# Run kysely-codegen *before* building
-ENV DATABASE_URL=postgresql://postgres:m2plpy8dF1ceckCW@insipidly-accredited-spaniel.data-1.use1.tembo.io:5432/postgres?sslmode=verify-full&sslrootcert=ca.crt
 
 # ---- Build ----
-# Build the TypeScript application
 FROM dependencies AS build
-ENV DATABASE_URL=postgresql://postgres:m2plpy8dF1ceckCW@insipidly-accredited-spaniel.data-1.use1.tembo.io:5432/postgres?sslmode=verify-full&sslrootcert=ca.crt
 RUN npx --yes kysely-codegen --url "postgresql://postgres:m2plpy8dF1ceckCW@insipidly-accredited-spaniel.data-1.use1.tembo.io:5432/postgres?sslmode=verify-full&sslrootcert=ca.crt"
 RUN npm run build
 
 # ---- Release ----
-# Start from a clean base image again
 FROM base AS release
 # Set environment to production
 ENV NODE_ENV=production
 # Install *only* production dependencies
-# Also install pino-pretty explicitly as it's used in the start command pipe via npx
-# Note: Installing pino-pretty globally might be another option if preferred.
 RUN npm install --omit=dev
 
 # Copy necessary artifacts from the previous stages
@@ -41,22 +26,8 @@ COPY --from=build /usr/src/app/dist ./dist
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/ca.crt ./ca.crt
 
-# Expose the port the app runs on (from your .env)
 EXPOSE 8000
-
-# Create a non-root user and switch to it for security
-# RUN addgroup --system --gid 1001 nodejs
-# RUN adduser --system --uid 1001 nodejs
-# USER nodejs
-# The standard node images come with a 'node' user, let's use that.
-# Ensure the 'node' user owns the application files
 
 
 # Define the command to run the application
-# This command mimics your "start" script: node dist/server.js | npx pino-pretty
-# Using "sh -c" allows the pipe (|) to work. npx will download/run pino-pretty.
-# Note: For pure production logging, it's often better to output raw JSON (Pino's default)
-# and handle aggregation/prettifying outside the container. But this matches your script.
 CMD ["sh", "-c", "node dist/server.js | npx pino-pretty"]
-
-# --- End of Dockerfile ---
