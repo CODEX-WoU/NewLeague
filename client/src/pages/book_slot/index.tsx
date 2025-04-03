@@ -1,27 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { server } from "../../config/axiosConfig";
 import { useNavigate } from "react-router-dom";
-
-interface Category {
-  id: string;
-  category_name: string;
-  cover_image_url: string;
-}
-
-interface Facility {
-  id: string;
-  name: string;
-  cover_image_url: string;
-}
-
-interface Slot {
-  id: string;
-  start_time: string;
-  end_time: string;
-  courts_available_at_slot: number;
-  is_available: boolean;
-  day: string;
-}
+import { Category, Facility, Slot } from "../../interfaces/BookingsInterface";
 
 const SlotBooking: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
