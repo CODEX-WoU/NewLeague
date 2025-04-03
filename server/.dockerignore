@@ -1,0 +1,36 @@
+.git
+.gitignore
+
+# Node modules - these are installed within the container
+node_modules
+
+# Build output directory
+dist
+
+# Runtime logs
+*.log
+logs/
+
+# Environment variables file (should be injected at runtime, not built into image)
+.env
+.env.*
+!/.env.example # You might want to include an example env file
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Docker files
+Dockerfile
+.dockerignore
+
+# Husky directory
+.husky
+
+# Debugging / IDE files
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

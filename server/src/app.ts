@@ -6,7 +6,6 @@ import routes from "./common/routes"
 import unknownEndpoint from "./middlewares/unknownEndpoint"
 
 // to use env variables
-import "./common/env"
 import appConfig from "./config/appConfig"
 
 const app: Application = express()
