@@ -104,11 +104,18 @@ const SlotBooking: React.FC = () => {
       );
       if (res.data.success) {
         setToastMessage({ message: "Booking successful!", type: "success" });
+        setTimeout(() => {
+          setToastMessage(null);
+        }, 2500);
+        await fetchSlots(selectedFacility as string);
       } else {
         setToastMessage({
           message: "Booking failed. Please try again.",
           type: "error",
         });
+        setTimeout(() => {
+          setToastMessage(null);
+        }, 2500);
       }
     } catch (err: any) {
       if (err.response?.status === 400) {
@@ -116,11 +123,17 @@ const SlotBooking: React.FC = () => {
           message: "User is only allowed to book one slot per day.",
           type: "error",
         });
+        setTimeout(() => {
+          setToastMessage(null);
+        }, 2500);
       } else {
         setToastMessage({
           message: "Error booking slot. Please try again.",
           type: "error",
         });
+        setTimeout(() => {
+          setToastMessage(null);
+        }, 2500);
       }
     } finally {
       setLoading(false);
@@ -129,7 +142,7 @@ const SlotBooking: React.FC = () => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto min-h-[80vh]">
-      {toastMessage && (
+      {toastMessage !== null && (
         <div className="z-50 toast toast-end toast-center">
           <div
             className={`alert ${
@@ -176,7 +189,7 @@ const SlotBooking: React.FC = () => {
                 />
                 <p className="text-lg font-semibold">{facility.name}</p>
                 <button
-                  className="mt-2 bg-blue-500 text-white px-4 py-2 rounded"
+                  className="mt-2 bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded"
                   onClick={() => {
                     setSelectedFacility(facility.id);
                     fetchSlots(facility.id);
@@ -201,11 +214,14 @@ const SlotBooking: React.FC = () => {
                   <p className="text-lg font-semibold">
                     {slot.start_time} - {slot.end_time}
                   </p>
-                  <p>Courts Available: {slot.courts_available_at_slot}</p>
+                  <p>
+                    Courts allocated for this slot:{" "}
+                    {slot.courts_available_at_slot}
+                  </p>
                   <button
                     className={`mt-2 px-4 py-2 rounded ${
                       slot.is_available
-                        ? "bg-green-500 text-white"
+                        ? "bg-green-500 hover:bg-green-700 text-white"
                         : "bg-gray-400 text-gray-600 cursor-not-allowed"
                     }`}
                     disabled={!slot.is_available}
