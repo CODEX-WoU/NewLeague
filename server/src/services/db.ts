@@ -1,5 +1,5 @@
 import { DB } from "kysely-codegen"
-import { Pool, types } from "pg"
+import { Client, Pool, types } from "pg"
 import { Kysely, PostgresDialect } from "kysely"
 
 import "../common/env"
